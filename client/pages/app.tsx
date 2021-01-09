@@ -1,4 +1,4 @@
-import { Box, Button, Flex, Text, Textarea } from "@chakra-ui/react";
+import { Button, Flex, Text, Textarea } from "@chakra-ui/react";
 import Image from "next/image";
 
 const app = () => (
