@@ -1,4 +1,5 @@
-import { Box, Button, Flex, Textarea } from "@chakra-ui/react";
+import { Box, Button, Flex, Text, Textarea } from "@chakra-ui/react";
+import Image from "next/image";
 
 const app = () => (
   <Flex h="100vh">
@@ -23,14 +24,25 @@ const app = () => (
     {/* Right Tab */}
     <Flex w="81%" h="100%" p={1} flexDir="column">
       {/* Top */}
-      <Flex bg="red.200" h="10%" align="center" justify="space-between">
-        <Box>Image + Name of person currently talking to</Box>
+      <Flex h="10%" p={5} border="1px" align="center" justify="space-between">
+        {/* Image + Name of person currently talking to */}
+        <Flex align="center" justify="center">
+          <Image src="/images/avatar-icon.png" alt="avatar" width={50} height={50} />
+          <Text ml={3} fontSize="2xl">
+            John Smith
+          </Text>
+        </Flex>
 
-        <Box>Start call icons</Box>
+        {/* Start call button */}
+        <Flex align="center" justify="center">
+          <Button variant="outline" colorScheme="blue">
+            Start Video Call
+          </Button>
+        </Flex>
       </Flex>
 
       {/* Main Messages */}
-      <Flex bg="green.200" h="80%">
+      <Flex h="80%" p={5} border="1px" align="center" justify="center">
         Main messages
       </Flex>
 
