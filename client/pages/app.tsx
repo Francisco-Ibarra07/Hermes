@@ -1,7 +1,7 @@
-import { Box, Flex } from "@chakra-ui/react";
+import { Box, Button, Flex, Textarea } from "@chakra-ui/react";
 
 const app = () => (
-  <Flex bg="blue.100" h="100vh">
+  <Flex h="100vh">
     {/* Left Tab */}
     <Flex bg="purple.100" w="19%" h="100%" flexDir="column">
       {/* User Icon + Name + MySettings + AddFriend */}
@@ -21,7 +21,7 @@ const app = () => (
     </Flex>
 
     {/* Right Tab */}
-    <Flex bg="red.100" w="81%" h="100%" flexDir="column">
+    <Flex w="81%" h="100%" p={1} flexDir="column">
       {/* Top */}
       <Flex bg="red.200" h="10%" align="center" justify="space-between">
         <Box>Image + Name of person currently talking to</Box>
@@ -35,8 +35,11 @@ const app = () => (
       </Flex>
 
       {/* Typing area */}
-      <Flex bg="blue.200" h="10%">
-        Typing section
+      <Flex h="10%" p={5} border="1px" align="center">
+        <Textarea placeholder="Type message here" size="md" resize="none" />
+        <Button ml={5} colorScheme="blue">
+          Send
+        </Button>
       </Flex>
     </Flex>
   </Flex>
