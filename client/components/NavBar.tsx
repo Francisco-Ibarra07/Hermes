@@ -7,7 +7,7 @@ function NavBar() {
   return (
     <Box>
       <Flex my={15} mx={150} justify="space-between">
-        <Link href="/">
+        <Link href="#">
           <Flex
             align="center"
             justify="center"
@@ -25,10 +25,10 @@ function NavBar() {
 
         <Flex align="center" justify="center">
           <ButtonGroup ml={2} variant="outline">
-            <Link href="/login">
+            <Link href="#">
               <Button>Login</Button>
             </Link>
-            <Link href="/signup">
+            <Link href="#">
               <Button>Signup</Button>
             </Link>
           </ButtonGroup>
