@@ -7,53 +7,63 @@ import {
   Heading,
   Input,
 } from "@chakra-ui/react";
-import { Field, FieldProps, Form, Formik, FormikProps } from "formik";
+import { Field, FieldProps, Form, Formik, FormikHelpers, FormikProps } from "formik";
 
-const Signup = () => (
-  <Flex h="100vh" align="center" justify="center">
-    <Flex w="40%" h="50%" p={5} border="1px" borderRadius="md" boxShadow="lg" flexDir="column">
-      <Formik
-        initialValues={{ email: "", password: "" }}
-        onSubmit={(values, actions) => {
-          console.log("Values submitted: ", values);
-        }}
-      >
-        {(props: FormikProps<any>) => (
-          <Form>
-            <Flex flexDir="column" align="center">
-              <Heading as="h1" size="xl" my={5}>
-                Signup
-              </Heading>
+interface SignupFormValues {
+  email: string;
+  password: string;
+}
 
-              <Field type="email" name="email">
-                {(props: FieldProps) => (
-                  <FormControl my={5}>
-                    <FormLabel htmlFor="email">Email</FormLabel>
-                    <Input {...props.field} id="email" placeholder="email" />
-                    <FormErrorMessage>{props.form.errors.email}</FormErrorMessage>
-                  </FormControl>
-                )}
-              </Field>
+const Signup = () => {
+  const handleFormSubmit = (values: SignupFormValues, actions: FormikHelpers<SignupFormValues>) => {
+    console.log(values, actions);
 
-              <Field type="password" name="password">
-                {(props: FieldProps) => (
-                  <FormControl my={5}>
-                    <FormLabel htmlFor="password">Password</FormLabel>
-                    <Input {...props.field} id="password" placeholder="password" />
-                    <FormErrorMessage>{props.form.errors.password}</FormErrorMessage>
-                  </FormControl>
-                )}
-              </Field>
+    setTimeout(() => {
+      actions.setSubmitting(false);
+    }, 500);
+  };
 
-              <Button type="submit" isLoading={props.isSubmitting} my={5}>
-                Submit
-              </Button>
-            </Flex>
-          </Form>
-        )}
-      </Formik>
+  return (
+    <Flex h="100vh" align="center" justify="center">
+      <Flex w="40%" h="50%" p={5} border="1px" borderRadius="md" boxShadow="lg" flexDir="column">
+        <Formik initialValues={{ email: "", password: "" }} onSubmit={handleFormSubmit}>
+          {(props: FormikProps<SignupFormValues>) => (
+            <Form>
+              <Flex flexDir="column" align="center">
+                <Heading as="h1" size="xl" my={5}>
+                  Signup
+                </Heading>
+
+                <Field type="email" name="email">
+                  {(props: FieldProps) => (
+                    <FormControl my={5}>
+                      <FormLabel htmlFor="email">Email</FormLabel>
+                      <Input {...props.field} id="email" placeholder="email" />
+                      <FormErrorMessage>{props.form.errors.email}</FormErrorMessage>
+                    </FormControl>
+                  )}
+                </Field>
+
+                <Field type="password" name="password">
+                  {(props: FieldProps) => (
+                    <FormControl my={5}>
+                      <FormLabel htmlFor="password">Password</FormLabel>
+                      <Input {...props.field} id="password" placeholder="password" />
+                      <FormErrorMessage>{props.form.errors.password}</FormErrorMessage>
+                    </FormControl>
+                  )}
+                </Field>
+
+                <Button type="submit" isLoading={props.isSubmitting} my={5}>
+                  Submit
+                </Button>
+              </Flex>
+            </Form>
+          )}
+        </Formik>
+      </Flex>
     </Flex>
-  </Flex>
-);
+  );
+};
 
 export default Signup;
