@@ -9,6 +9,10 @@ import { buildSchema } from "type-graphql";
 import { TestResolver } from "./resolvers/TestResolver";
 import { PostResolver } from "./resolvers/PostResolver";
 import { UserResolver } from "./resolvers/UserResolver";
+import redis from "redis";
+import session from "express-session";
+import connectRedis from "connect-redis";
+import { MyContext } from "./types";
 
 // Main function so I can do 'top-level' async/await
 const main = async () => {
@@ -18,6 +22,28 @@ const main = async () => {
   await (await orm).getMigrator().up();
 
   const app = express();
+
+  const RedisStore = connectRedis(session);
+  const redisClient = redis.createClient();
+
+  app.use(
+    session({
+      name: "qid",
+      store: new RedisStore({
+        client: redisClient,
+        disableTouch: true,
+      }),
+      cookie: {
+        maxAge: 1000 * 60 * 60 * 24 * 7, // 1 week
+        httpOnly: true,
+        secure: __prod__,
+        sameSite: "lax",
+      },
+      secret: "tempsecretkey",
+      resave: false,
+      saveUninitialized: false,
+    })
+  );
 
   app.use(
     cors({
@@ -33,8 +59,10 @@ const main = async () => {
   const apolloServer = new ApolloServer({
     schema,
     // Special object accessible by all resolvers
-    context: async () => ({
+    context: async ({ req, res }): Promise<MyContext> => ({
       em: (await orm).em,
+      req,
+      res,
     }),
   });
   apolloServer.applyMiddleware({ app });
