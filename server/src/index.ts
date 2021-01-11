@@ -8,6 +8,7 @@ import cors from "cors";
 import { buildSchema } from "type-graphql";
 import { TestResolver } from "./resolvers/TestResolver";
 import { PostResolver } from "./resolvers/PostResolver";
+import { UserResolver } from "./resolvers/UserResolver";
 
 // Main function so I can do 'top-level' async/await
 const main = async () => {
@@ -25,7 +26,7 @@ const main = async () => {
   );
 
   const schema = await buildSchema({
-    resolvers: [TestResolver, PostResolver],
+    resolvers: [TestResolver, PostResolver, UserResolver],
     validate: false,
   });
 
