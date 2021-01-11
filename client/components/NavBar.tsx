@@ -25,7 +25,7 @@ function NavBar() {
 
         <Flex align="center" justify="center">
           <ButtonGroup ml={2} variant="outline">
-            <Link href="#">
+            <Link href="/login">
               <Button>Login</Button>
             </Link>
             <Link href="/signup">
