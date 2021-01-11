@@ -28,7 +28,7 @@ function NavBar() {
             <Link href="#">
               <Button>Login</Button>
             </Link>
-            <Link href="#">
+            <Link href="/signup">
               <Button>Signup</Button>
             </Link>
           </ButtonGroup>
