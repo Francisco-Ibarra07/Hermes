@@ -1,6 +1,6 @@
 import { User } from "../entities/User";
 import { MyContext } from "src/types";
-import { Arg, Ctx, Field, Mutation, ObjectType, Resolver } from "type-graphql";
+import { Arg, Ctx, Field, Mutation, ObjectType, Query, Resolver } from "type-graphql";
 import argon2 from "argon2";
 
 @ObjectType()
@@ -23,13 +23,24 @@ class UserResponse {
 
 @Resolver()
 export class UserResolver {
+  @Query(() => User, { nullable: true })
+  async isLoggedIn(@Ctx() ctx: MyContext) {
+    const { em, req } = ctx;
+
+    if (!req.session.userId) {
+      return null;
+    }
+
+    return await em.findOne(User, { id: req.session.userId });
+  }
+
   @Mutation(() => UserResponse)
   async signupUser(
     @Arg("email", () => String) email: string,
     @Arg("password", () => String) password: string,
     @Ctx() ctx: MyContext
   ): Promise<UserResponse> {
-    const { em } = ctx;
+    const { em, req } = ctx;
 
     if (password.length < 6) {
       return {
@@ -58,6 +69,7 @@ export class UserResolver {
     const newUser = em.create(User, { email: email.toLowerCase(), password: hashedPassword });
     await em.persistAndFlush(newUser);
 
+    req.session.userId = newUser.id;
     return { user: newUser };
   }
 
@@ -67,7 +79,7 @@ export class UserResolver {
     @Arg("password", () => String) password: string,
     @Ctx() ctx: MyContext
   ): Promise<UserResponse> {
-    const { em } = ctx;
+    const { em, req } = ctx;
 
     // If user DNE, return error
     const user = await em.findOne(User, { email: email.toLowerCase() });
@@ -94,6 +106,8 @@ export class UserResolver {
         ],
       };
     }
+
+    req.session.userId = user.id;
 
     return {
       user,
