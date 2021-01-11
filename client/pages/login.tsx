@@ -14,9 +14,9 @@ interface SignupFormValues {
   password: string;
 }
 
-const Signup = () => {
+const Login = () => {
   const handleFormSubmit = (values: SignupFormValues, actions: FormikHelpers<SignupFormValues>) => {
-    console.log("Signup");
+    console.log("Logging in");
     console.log(values, actions);
 
     setTimeout(() => {
@@ -33,7 +33,7 @@ const Signup = () => {
             <Form>
               <Flex flexDir="column" align="center">
                 <Heading as="h1" size="xl" my={5}>
-                  Signup
+                  Login
                 </Heading>
 
                 <Field type="email" name="email">
@@ -68,4 +68,4 @@ const Signup = () => {
   );
 };
 
-export default Signup;
+export default Login;
