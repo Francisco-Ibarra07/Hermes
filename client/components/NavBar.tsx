@@ -7,7 +7,7 @@ function NavBar() {
   return (
     <Box>
       <Flex my={15} mx={150} justify="space-between">
-        <Link href="#">
+        <Link href="/">
           <Flex
             align="center"
             justify="center"
