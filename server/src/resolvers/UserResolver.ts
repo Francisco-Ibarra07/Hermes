@@ -23,19 +23,42 @@ class UserResponse {
 
 @Resolver()
 export class UserResolver {
-  @Mutation(() => User)
+  @Mutation(() => UserResponse)
   async signupUser(
     @Arg("email", () => String) email: string,
     @Arg("password", () => String) password: string,
     @Ctx() ctx: MyContext
-  ): Promise<User> {
+  ): Promise<UserResponse> {
     const { em } = ctx;
-    const hashedPassword = await argon2.hash(password);
 
+    if (password.length < 6) {
+      return {
+        errors: [
+          {
+            field: "password",
+            message: "length must be at least 6 characters",
+          },
+        ],
+      };
+    }
+
+    const userExists = await em.findOne(User, { email });
+    if (userExists) {
+      return {
+        errors: [
+          {
+            field: "email",
+            message: "email already exists",
+          },
+        ],
+      };
+    }
+
+    const hashedPassword = await argon2.hash(password);
     const newUser = em.create(User, { email: email.toLowerCase(), password: hashedPassword });
     await em.persistAndFlush(newUser);
 
-    return newUser;
+    return { user: newUser };
   }
 
   @Mutation(() => UserResponse)
