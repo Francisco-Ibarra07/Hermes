@@ -17,7 +17,7 @@ function FriendCard(props: FriendCardProps) {
       h="80px"
       minH="80px"
       cursor="pointer"
-      bg={props.isActive ? "gray.100" : ""}
+      bg={props.isActive ? "gray.200" : ""}
       _hover={!props.isActive ? { bg: "gray.100" } : {}}
       align="center"
       justify="space-between"
