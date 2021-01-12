@@ -5,7 +5,8 @@ import FriendCard from "../components/FriendCard";
 const app = () => {
   const fillFriends = (count: number) => {
     let list = [];
-    for (let i = 0; i < count; i++) {
+    list.push(<FriendCard key={`friendcard-${0}`} isActive />);
+    for (let i = 1; i < count; i++) {
       list.push(<FriendCard key={`friendcard-${i}`} />);
     }
 
@@ -40,14 +41,14 @@ const app = () => {
         </Flex>
 
         {/* Friends List */}
-        <Flex h="80%" flexDir="column" overflow="auto">
+        <Flex h="80%" flexDir="column" overflow="hidden" _hover={{ overflow: "auto" }}>
           {/* Friend Card */}
           {fillFriends(15)}
         </Flex>
       </Flex>
 
       {/* Right Tab */}
-      <Flex w="81%" h="100%" p={1} flexDir="column">
+      <Flex w="81%" h="100%" flexDir="column">
         {/* Top */}
         <Flex h="10%" p={5} border="1px" align="center" justify="space-between">
           {/* Image + Name of person currently talking to */}
@@ -68,7 +69,13 @@ const app = () => {
 
         {/* Main Messages */}
         <Flex h="80%" p={5} border="1px" align="center" justify="center">
-          <Flex h="100%" w="100%" overflow="auto" flexDir="column-reverse">
+          <Flex
+            h="100%"
+            w="100%"
+            overflow="hidden"
+            _hover={{ overflow: "auto" }}
+            flexDir="column-reverse"
+          >
             {fillMessages(40)}
           </Flex>
         </Flex>
