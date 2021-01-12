@@ -1,4 +1,13 @@
-import { Button, Flex, Text, Textarea } from "@chakra-ui/react";
+import {
+  Button,
+  Flex,
+  Text,
+  Textarea,
+  Image as ChakraImage,
+  Heading,
+  Box,
+  ButtonGroup,
+} from "@chakra-ui/react";
 import Image from "next/image";
 import { useState } from "react";
 import FriendCard from "../components/FriendCard";
@@ -43,9 +52,26 @@ const app = () => {
     <Flex h="100vh">
       {/* Left Tab */}
       <Flex w="19%" h="100%" flexDir="column">
-        {/* User Icon + Name + MySettings + AddFriend */}
-        <Flex bg="teal.100" h="10%">
-          User Icon + Name + MySettings + AddFriend
+        {/* User Icon + Chats + MySettings + AddFriend */}
+        <Flex h="10%" mx={2} align="center" justify="space-between">
+          {/* User Icon + Chats*/}
+          <Flex align="center" justify="center">
+            <ChakraImage src="/images/avatar-icon.png" alt="avatar" boxSize={30} />
+            <Heading as="h1" size="md" ml={2}>
+              Chats
+            </Heading>
+          </Flex>
+          {/* Settings + Add Friend */}
+          <Flex align="center" justify="center">
+            <ButtonGroup spacing={1}>
+              <Box as="button">
+                <ChakraImage src="/images/settings-icon.png" alt="settings" boxSize={30} />
+              </Box>
+              <Box as="button">
+                <ChakraImage src="/images/add-friend-icon.png" alt="add-friend" boxSize={30} />
+              </Box>
+            </ButtonGroup>
+          </Flex>
         </Flex>
 
         {/* Search Bar */}
