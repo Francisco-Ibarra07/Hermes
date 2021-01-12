@@ -82,13 +82,18 @@ export class UserResolver {
     const { em, req } = ctx;
 
     // If user DNE, return error
+    const errMsg = "Email or Password is incorrect";
     const user = await em.findOne(User, { email: email.toLowerCase() });
     if (!user) {
       return {
         errors: [
           {
             field: "email",
-            message: "Invalid login",
+            message: errMsg,
+          },
+          {
+            field: "password",
+            message: errMsg,
           },
         ],
       };
@@ -100,8 +105,12 @@ export class UserResolver {
       return {
         errors: [
           {
+            field: "email",
+            message: errMsg,
+          },
+          {
             field: "password",
-            message: "Invalid login",
+            message: errMsg,
           },
         ],
       };
