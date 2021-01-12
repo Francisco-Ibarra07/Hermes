@@ -1,4 +1,4 @@
-import { Button, Flex, Text, Textarea, Image as ChakraImage } from "@chakra-ui/react";
+import { Button, Flex, Text, Textarea } from "@chakra-ui/react";
 import Image from "next/image";
 import FriendCard from "../components/FriendCard";
 
@@ -6,7 +6,7 @@ const app = () => {
   const fillFriends = (count: number) => {
     let list = [];
     for (let i = 0; i < count; i++) {
-      list.push(<FriendCard />);
+      list.push(<FriendCard key={`friendcard-${i}`} />);
     }
 
     return list;
@@ -15,7 +15,11 @@ const app = () => {
   const fillMessages = (count: number) => {
     let list = [];
     for (let i = 0; i < count; i++) {
-      list.push(<Text textAlign={i % 2 == 0 ? "left" : "right"}>message-{i}</Text>);
+      list.push(
+        <Text key={`msg-${i}`} textAlign={i % 2 == 0 ? "left" : "right"}>
+          message-{i}
+        </Text>
+      );
     }
 
     return list;
@@ -38,7 +42,7 @@ const app = () => {
         {/* Friends List */}
         <Flex bg="pink.100" h="80%" flexDir="column" overflow="auto">
           {/* Friend Card */}
-          {fillFriends(8)}
+          {fillFriends(15)}
         </Flex>
       </Flex>
 
@@ -64,7 +68,7 @@ const app = () => {
 
         {/* Main Messages */}
         <Flex h="80%" p={5} border="1px" align="center" justify="center">
-          <Flex h="100%" w="100%" overflow="auto" flexDir="column">
+          <Flex h="100%" w="100%" overflow="auto" flexDir="column-reverse">
             {fillMessages(40)}
           </Flex>
         </Flex>
