@@ -35,7 +35,7 @@ const Signup = () => {
     if (response.data?.signupUser.errors) {
       actions.setErrors(toErrorMap(response.data.signupUser.errors));
     }
-    // Successful login
+    // Successful signup
     else if (response.data?.signupUser.user) {
       router.push("/app");
     }

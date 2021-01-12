@@ -100,7 +100,7 @@ export type LoginMutationVariables = Exact<{
 
 export type LoginMutation = (
   { __typename?: 'Mutation' }
-  & { signupUser: (
+  & { loginUser: (
     { __typename?: 'UserResponse' }
     & { errors?: Maybe<Array<(
       { __typename?: 'FieldError' }
@@ -135,7 +135,7 @@ export type SignupMutation = (
 
 export const LoginDocument = gql`
     mutation Login($email: String!, $password: String!) {
-  signupUser(email: $email, password: $password) {
+  loginUser(email: $email, password: $password) {
     errors {
       field
       message
