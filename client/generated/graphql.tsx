@@ -92,6 +92,26 @@ export type FieldError = {
   message: Scalars['String'];
 };
 
+export type LoginMutationVariables = Exact<{
+  email: Scalars['String'];
+  password: Scalars['String'];
+}>;
+
+
+export type LoginMutation = (
+  { __typename?: 'Mutation' }
+  & { signupUser: (
+    { __typename?: 'UserResponse' }
+    & { errors?: Maybe<Array<(
+      { __typename?: 'FieldError' }
+      & Pick<FieldError, 'field' | 'message'>
+    )>>, user?: Maybe<(
+      { __typename?: 'User' }
+      & Pick<User, 'id' | 'email'>
+    )> }
+  ) }
+);
+
 export type SignupMutationVariables = Exact<{
   email: Scalars['String'];
   password: Scalars['String'];
@@ -113,6 +133,24 @@ export type SignupMutation = (
 );
 
 
+export const LoginDocument = gql`
+    mutation Login($email: String!, $password: String!) {
+  signupUser(email: $email, password: $password) {
+    errors {
+      field
+      message
+    }
+    user {
+      id
+      email
+    }
+  }
+}
+    `;
+
+export function useLoginMutation() {
+  return Urql.useMutation<LoginMutation, LoginMutationVariables>(LoginDocument);
+};
 export const SignupDocument = gql`
     mutation Signup($email: String!, $password: String!) {
   signupUser(email: $email, password: $password) {
