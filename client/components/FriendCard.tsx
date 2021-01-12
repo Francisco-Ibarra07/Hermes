@@ -1,9 +1,23 @@
 import { Flex, Button, Text, Image as ChakraImage } from "@chakra-ui/react";
-import React from "react";
+import React, { useState } from "react";
 
 function FriendCard() {
+  const [isHovering, setIsHovering] = useState(false);
+
   return (
-    <Flex w="100%" h="80px" minH="80px" p={2} border="1px" align="center" justify="space-between">
+    <Flex
+      p={2}
+      w="100%"
+      h="80px"
+      minH="80px"
+      border="1px"
+      cursor="pointer"
+      _hover={{ bg: "gray.50" }}
+      align="center"
+      justify="space-between"
+      onMouseOver={() => setIsHovering(true)}
+      onMouseLeave={() => setIsHovering(false)}
+    >
       <Flex w="85%" align="center">
         <ChakraImage src="/images/avatar-icon.png" alt="avatar" boxSize={30} />
         <Flex ml={2} maxW="80%" flexDir="column" justify="center">
@@ -13,7 +27,11 @@ function FriendCard() {
           </Text>
         </Flex>
       </Flex>
-      <Button borderRadius="xl">...</Button>
+      {isHovering ? (
+        <Button colorScheme="blue" variant="outline" size="sm" borderRadius="xl">
+          ...
+        </Button>
+      ) : null}
     </Flex>
   );
 }

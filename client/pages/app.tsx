@@ -28,7 +28,7 @@ const app = () => {
   return (
     <Flex h="100vh">
       {/* Left Tab */}
-      <Flex bg="purple.100" w="19%" h="100%" flexDir="column">
+      <Flex w="19%" h="100%" flexDir="column">
         {/* User Icon + Name + MySettings + AddFriend */}
         <Flex bg="teal.100" h="10%">
           User Icon + Name + MySettings + AddFriend
@@ -40,7 +40,7 @@ const app = () => {
         </Flex>
 
         {/* Friends List */}
-        <Flex bg="pink.100" h="80%" flexDir="column" overflow="auto">
+        <Flex h="80%" flexDir="column" overflow="auto">
           {/* Friend Card */}
           {fillFriends(15)}
         </Flex>
