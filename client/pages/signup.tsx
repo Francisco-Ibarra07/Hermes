@@ -10,6 +10,8 @@ import {
 } from "@chakra-ui/react";
 import { Field, FieldProps, Form, Formik, FormikHelpers, FormikProps } from "formik";
 import NavBar from "../components/NavBar";
+import { useSignupMutation } from "../generated/graphql";
+import { useRouter } from "next/router";
 
 interface SignupFormValues {
   email: string;
@@ -17,13 +19,25 @@ interface SignupFormValues {
 }
 
 const Signup = () => {
-  const handleFormSubmit = (values: SignupFormValues, actions: FormikHelpers<SignupFormValues>) => {
-    console.log("Signup");
-    console.log(values, actions);
+  const [{}, signupUser] = useSignupMutation();
+  const router = useRouter();
 
-    setTimeout(() => {
-      actions.setSubmitting(false);
-    }, 500);
+  const handleFormSubmit = async (
+    values: SignupFormValues,
+    actions: FormikHelpers<SignupFormValues>
+  ) => {
+    const response = await signupUser(values);
+    actions.setSubmitting(false);
+
+    // Check for form errors
+    if (response.data?.signupUser.errors) {
+      // actions.setErrors({
+      // });
+    }
+    // Successful login
+    else if (response.data?.signupUser.user) {
+      router.push("/app");
+    }
   };
 
   return (
@@ -40,11 +54,11 @@ const Signup = () => {
                     Signup
                   </Heading>
 
-                  <Field type="email" name="email">
+                  <Field name="email">
                     {(props: FieldProps) => (
                       <FormControl my={5}>
                         <FormLabel htmlFor="email">Email</FormLabel>
-                        <Input {...props.field} id="email" placeholder="email" />
+                        <Input {...props.field} id="email" placeholder="email" type="email" />
                         <FormErrorMessage>{props.form.errors.email}</FormErrorMessage>
                       </FormControl>
                     )}
@@ -54,7 +68,12 @@ const Signup = () => {
                     {(props: FieldProps) => (
                       <FormControl my={5}>
                         <FormLabel htmlFor="password">Password</FormLabel>
-                        <Input {...props.field} id="password" placeholder="password" />
+                        <Input
+                          {...props.field}
+                          id="password"
+                          placeholder="password"
+                          type="password"
+                        />
                         <FormErrorMessage>{props.form.errors.password}</FormErrorMessage>
                       </FormControl>
                     )}
