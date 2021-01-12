@@ -1,7 +1,11 @@
 import { Flex, Button, Text, Image as ChakraImage } from "@chakra-ui/react";
 import React, { useState } from "react";
 
-function FriendCard() {
+interface FriendCardProps {
+  isActive?: boolean;
+}
+
+function FriendCard(props: FriendCardProps) {
   const [isHovering, setIsHovering] = useState(false);
 
   return (
@@ -10,8 +14,8 @@ function FriendCard() {
       w="100%"
       h="80px"
       minH="80px"
-      border="1px"
       cursor="pointer"
+      bg={props.isActive ? "gray.100" : ""}
       _hover={{ bg: "gray.50" }}
       align="center"
       justify="space-between"
