@@ -1,13 +1,26 @@
 import { Button, Flex, Text, Textarea } from "@chakra-ui/react";
 import Image from "next/image";
+import { useState } from "react";
 import FriendCard from "../components/FriendCard";
 
 const app = () => {
+  const [activeCardNum, setActiveCardNum] = useState(0);
+
+  const onFriendCardClick = (key: number) => {
+    setActiveCardNum(key);
+  };
+
   const fillFriends = (count: number) => {
     let list = [];
-    list.push(<FriendCard key={`friendcard-${0}`} isActive />);
-    for (let i = 1; i < count; i++) {
-      list.push(<FriendCard key={`friendcard-${i}`} />);
+    for (let i = 0; i < count; i++) {
+      list.push(
+        <FriendCard
+          key={i}
+          cardKey={i}
+          isActive={i == activeCardNum}
+          onClickHandler={onFriendCardClick}
+        />
+      );
     }
 
     return list;

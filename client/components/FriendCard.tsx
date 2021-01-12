@@ -2,7 +2,9 @@ import { Flex, Button, Text, Image as ChakraImage } from "@chakra-ui/react";
 import React, { useState } from "react";
 
 interface FriendCardProps {
+  cardKey: number;
   isActive?: boolean;
+  onClickHandler: (key: number) => void;
 }
 
 function FriendCard(props: FriendCardProps) {
@@ -16,11 +18,12 @@ function FriendCard(props: FriendCardProps) {
       minH="80px"
       cursor="pointer"
       bg={props.isActive ? "gray.100" : ""}
-      _hover={{ bg: "gray.50" }}
+      _hover={!props.isActive ? { bg: "gray.100" } : {}}
       align="center"
       justify="space-between"
       onMouseOver={() => setIsHovering(true)}
       onMouseLeave={() => setIsHovering(false)}
+      onClick={() => props.onClickHandler(props.cardKey)}
     >
       <Flex w="85%" align="center">
         <ChakraImage src="/images/avatar-icon.png" alt="avatar" boxSize={30} />
