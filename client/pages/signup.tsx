@@ -12,6 +12,7 @@ import { Field, FieldProps, Form, Formik, FormikHelpers, FormikProps } from "for
 import NavBar from "../components/NavBar";
 import { useSignupMutation } from "../generated/graphql";
 import { useRouter } from "next/router";
+import { toErrorMap } from "../utils/toErrorMap";
 
 interface SignupFormValues {
   email: string;
@@ -26,13 +27,13 @@ const Signup = () => {
     values: SignupFormValues,
     actions: FormikHelpers<SignupFormValues>
   ) => {
+    // Send credentials to graphql server
     const response = await signupUser(values);
     actions.setSubmitting(false);
 
-    // Check for form errors
+    // Check for errors returned
     if (response.data?.signupUser.errors) {
-      // actions.setErrors({
-      // });
+      actions.setErrors(toErrorMap(response.data.signupUser.errors));
     }
     // Successful login
     else if (response.data?.signupUser.user) {
@@ -56,7 +57,10 @@ const Signup = () => {
 
                   <Field name="email">
                     {(props: FieldProps) => (
-                      <FormControl my={5}>
+                      <FormControl
+                        my={5}
+                        isInvalid={!!props.form.errors.email && !!props.form.touched.email}
+                      >
                         <FormLabel htmlFor="email">Email</FormLabel>
                         <Input {...props.field} id="email" placeholder="email" type="email" />
                         <FormErrorMessage>{props.form.errors.email}</FormErrorMessage>
@@ -64,9 +68,12 @@ const Signup = () => {
                     )}
                   </Field>
 
-                  <Field type="password" name="password">
+                  <Field name="password">
                     {(props: FieldProps) => (
-                      <FormControl my={5}>
+                      <FormControl
+                        my={5}
+                        isInvalid={!!props.form.errors.password && !!props.form.touched.password}
+                      >
                         <FormLabel htmlFor="password">Password</FormLabel>
                         <Input
                           {...props.field}
