@@ -10,50 +10,77 @@ import {
 } from "@chakra-ui/react";
 import { Field, FieldProps, Form, Formik, FormikHelpers, FormikProps } from "formik";
 import NavBar from "../components/NavBar";
+import { toErrorMap } from "../utils/toErrorMap";
+import { useLoginMutation } from "../generated/graphql";
+import { useRouter } from "next/router";
 
-interface SignupFormValues {
+interface LoginFormValues {
   email: string;
   password: string;
 }
 
 const Login = () => {
-  const handleFormSubmit = (values: SignupFormValues, actions: FormikHelpers<SignupFormValues>) => {
-    console.log("Logging in");
-    console.log(values, actions);
+  const [{}, loginUser] = useLoginMutation();
+  const router = useRouter();
 
-    setTimeout(() => {
-      actions.setSubmitting(false);
-    }, 500);
+  const handleFormSubmit = async (
+    values: LoginFormValues,
+    actions: FormikHelpers<LoginFormValues>
+  ) => {
+    // Send credentials to graphql server
+    const response = await loginUser(values);
+    actions.setSubmitting(false);
+
+    // Check for errors returned
+    if (response.data?.loginUser.errors) {
+      actions.setErrors(toErrorMap(response.data.loginUser.errors));
+    }
+    // Successful login
+    else if (response.data?.loginUser.user) {
+      router.push("/app");
+    }
   };
 
   return (
     <Box>
       <NavBar />
+
       <Flex mt="200px" align="center" justify="center">
         <Flex w="40%" h="50%" p={5} border="1px" borderRadius="md" boxShadow="lg" flexDir="column">
           <Formik initialValues={{ email: "", password: "" }} onSubmit={handleFormSubmit}>
-            {(props: FormikProps<SignupFormValues>) => (
+            {(props: FormikProps<LoginFormValues>) => (
               <Form>
                 <Flex flexDir="column" align="center">
                   <Heading as="h1" size="xl" my={5}>
                     Login
                   </Heading>
 
-                  <Field type="email" name="email">
+                  <Field name="email">
                     {(props: FieldProps) => (
-                      <FormControl my={5}>
+                      <FormControl
+                        my={5}
+                        isInvalid={!!props.form.errors.email && !!props.form.touched.email}
+                      >
                         <FormLabel htmlFor="email">Email</FormLabel>
-                        <Input {...props.field} id="email" placeholder="email" />
+                        <Input {...props.field} id="email" placeholder="email" type="email" />
                         <FormErrorMessage>{props.form.errors.email}</FormErrorMessage>
                       </FormControl>
                     )}
                   </Field>
 
-                  <Field type="password" name="password">
+                  <Field name="password">
                     {(props: FieldProps) => (
-                      <FormControl my={5}>
+                      <FormControl
+                        my={5}
+                        isInvalid={!!props.form.errors.password && !!props.form.touched.password}
+                      >
                         <FormLabel htmlFor="password">Password</FormLabel>
-                        <Input {...props.field} id="password" placeholder="password" />
+                        <Input
+                          {...props.field}
+                          id="password"
+                          placeholder="password"
+                          type="password"
+                        />
                         <FormErrorMessage>{props.form.errors.password}</FormErrorMessage>
                       </FormControl>
                     )}
