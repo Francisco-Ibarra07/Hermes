@@ -31,8 +31,14 @@ const Signup = () => {
     const response = await signupUser(values);
     actions.setSubmitting(false);
 
+    // Api is down
+    if (response.error?.networkError) {
+      actions.setErrors({
+        password: "Service is currently unavailable",
+      });
+    }
     // Check for errors returned
-    if (response.data?.signupUser.errors) {
+    else if (response.data?.signupUser.errors) {
       actions.setErrors(toErrorMap(response.data.signupUser.errors));
     }
     // Successful signup

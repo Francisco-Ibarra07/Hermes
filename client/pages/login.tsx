@@ -31,8 +31,14 @@ const Login = () => {
     const response = await loginUser(values);
     actions.setSubmitting(false);
 
+    // Api is down
+    if (response.error?.networkError) {
+      actions.setErrors({
+        password: "Service is currently unavailable",
+      });
+    }
     // Check for errors returned
-    if (response.data?.loginUser.errors) {
+    else if (response.data?.loginUser.errors) {
       actions.setErrors(toErrorMap(response.data.loginUser.errors));
     }
     // Successful login
