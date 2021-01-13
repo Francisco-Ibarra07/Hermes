@@ -1,7 +1,5 @@
 import "reflect-metadata";
-import { MikroORM } from "@mikro-orm/core";
 import { __prod__ } from "./constants";
-import mikroConfig from "./mikro-orm.config";
 import express from "express";
 import { ApolloServer } from "apollo-server-express";
 import cors from "cors";
@@ -13,13 +11,23 @@ import redis from "redis";
 import session from "express-session";
 import connectRedis from "connect-redis";
 import { MyContext } from "./types";
+import { createConnection } from "typeorm";
+import { Post } from "./entities/Post";
+import { User } from "./entities/User";
 
 // Main function so I can do 'top-level' async/await
 const main = async () => {
   console.log("started");
 
-  const orm = MikroORM.init(mikroConfig);
-  await (await orm).getMigrator().up();
+  const conn = await createConnection({
+    type: "postgres",
+    database: "hermes2",
+    username: "fibarra",
+    password: "fibarra",
+    logging: !__prod__,
+    synchronize: !__prod__,
+    entities: [Post, User],
+  });
 
   const app = express();
 
@@ -61,7 +69,6 @@ const main = async () => {
     schema,
     // Special object accessible by all resolvers
     context: async ({ req, res }): Promise<MyContext> => ({
-      em: (await orm).em,
       req,
       res,
     }),
