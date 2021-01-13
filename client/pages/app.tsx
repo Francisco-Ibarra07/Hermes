@@ -54,9 +54,9 @@ const app = () => {
   return (
     <Flex h="100vh">
       {/* Left Tab */}
-      <Flex w="19%" h="100%" flexDir="column">
+      <Flex w="20%" h="100%" flexDir="column">
         {/* User Icon + Chats + MySettings + AddFriend */}
-        <Flex h="10%" mx={2} align="center" justify="space-between">
+        <Flex h="7%" mx={2} align="center" justify="space-between">
           {/* User Icon + Chats*/}
           <Flex align="center" justify="center">
             <ChakraImage src="/images/avatar-icon.png" alt="avatar" boxSize={30} />
@@ -79,7 +79,7 @@ const app = () => {
         </Flex>
 
         {/* Search Bar */}
-        <Flex h="10%" mx={5} align="center" justify="center">
+        <Flex h="7%" mx={5} align="center" justify="center">
           <InputGroup>
             <InputLeftElement
               pointerEvents="none"
@@ -90,14 +90,14 @@ const app = () => {
         </Flex>
 
         {/* Friends List */}
-        <Flex h="80%" flexDir="column" overflow="hidden" _hover={{ overflow: "auto" }}>
+        <Flex h="86%" flexDir="column" overflow="hidden" _hover={{ overflow: "auto" }}>
           {/* Friend Card */}
           {fillFriends(15)}
         </Flex>
       </Flex>
 
       {/* Right Tab */}
-      <Flex w="81%" h="100%" flexDir="column">
+      <Flex w="80%" h="100%" flexDir="column">
         {/* Name of reciever + Start Call */}
         <Flex h="10%" p={5} border="1px" align="center" justify="space-between">
           {/* Image + Name of person currently talking to */}
