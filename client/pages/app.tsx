@@ -130,7 +130,7 @@ const app = () => {
           <Stack
             h="100%"
             w="100%"
-            mx={5}
+            px={5}
             spacing={5}
             overflow="auto"
             display="flex"
