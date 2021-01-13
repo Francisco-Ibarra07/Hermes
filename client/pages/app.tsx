@@ -10,6 +10,7 @@ import {
   InputGroup,
   InputLeftElement,
   Input,
+  Stack,
 } from "@chakra-ui/react";
 import Image from "next/image";
 import { useState } from "react";
@@ -43,7 +44,7 @@ const app = () => {
     let list = [];
     for (let i = 0; i < count; i++) {
       list.push(
-        <ChatMessage bg="blue.100" alignRight={i % 2 == 0}>
+        <ChatMessage key={`msg-${i}`} bg="blue.100" isFirst={i == 0} alignRight={i % 2 == 0}>
           Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor Lorem ipsum
           dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor Lorem ipsum dolor sit
           amet, consectetur adipiscing elit, sed do eiusmod tempor
@@ -121,9 +122,17 @@ const app = () => {
 
         {/* Main Messages */}
         <Flex h="80%" border="1px" align="center" justify="center">
-          <Flex h="100%" w="100%" overflow="auto" flexDir="column-reverse">
+          <Stack
+            h="100%"
+            w="100%"
+            mx={5}
+            spacing={5}
+            overflow="auto"
+            display="flex"
+            flexDir="column-reverse"
+          >
             {fillMessages(10)}
-          </Flex>
+          </Stack>
         </Flex>
 
         {/* Typing area */}
