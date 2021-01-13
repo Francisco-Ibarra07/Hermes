@@ -1,73 +1,47 @@
 import { Post } from "../entities/Post";
-import { Arg, Ctx, Int, Mutation, Query, Resolver } from "type-graphql";
-import { MyContext } from "src/types";
+import { Arg, Int, Mutation, Query, Resolver } from "type-graphql";
 
 @Resolver()
 export class PostResolver {
   // Returns an array of post
   @Query(() => [Post])
-  posts(@Ctx() ctx: MyContext): Promise<Post[]> {
-    const { em } = ctx;
-
-    return em.find(Post, {});
+  posts(): Promise<Post[]> {
+    return Post.find();
   }
 
   // Returns a single post given an id
-  // Returns 'null' if not found
   @Query(() => Post, { nullable: true })
-  post(@Arg("id", () => Int) id: number, @Ctx() ctx: MyContext): Promise<Post | null> {
-    const { em } = ctx;
-
-    // Find post where id='{id}'
-    return em.findOne(Post, { id });
+  post(@Arg("id", () => Int) id: number): Promise<Post | undefined> {
+    return Post.findOne(id);
   }
 
   // Creates a single post given the title
   @Mutation(() => Post)
-  async createPost(
-    @Arg("title", () => String) title: string,
-    @Ctx() ctx: MyContext
-  ): Promise<Post> {
-    const { em } = ctx;
-
-    // Create new post with title passed in
-    const newPost = em.create(Post, { title });
-    await em.persistAndFlush(newPost);
-    return newPost;
+  async createPost(@Arg("title", () => String) title: string): Promise<Post> {
+    return Post.create({ title }).save();
   }
 
   // Updates a single post given id and title
   @Mutation(() => Post, { nullable: true })
   async updatePost(
     @Arg("id", () => Int) id: number,
-    @Arg("title", () => String) newTitle: string,
-    @Ctx() ctx: MyContext
+    @Arg("title", () => String) newTitle: string
   ): Promise<Post | null> {
-    const { em } = ctx;
-
     // Make sure it exists
-    const targetPost = await em.findOne(Post, { id });
+    const targetPost = await Post.findOne(id);
     if (!targetPost) {
       return null;
     }
 
-    // Use em to update on postgres
-    targetPost.title = newTitle;
-    await em.persistAndFlush(targetPost);
+    await Post.update({ id }, { title: newTitle });
 
     return targetPost;
   }
 
   // Deletes a single post given an id
   @Mutation(() => Boolean)
-  async deletePost(@Arg("id", () => Int) id: number, @Ctx() ctx: MyContext): Promise<boolean> {
-    const { em } = ctx;
-
-    try {
-      await em.nativeDelete(Post, { id });
-      return true;
-    } catch {
-      return false;
-    }
+  async deletePost(@Arg("id", () => Int) id: number): Promise<boolean> {
+    await Post.delete(id);
+    return true;
   }
 }

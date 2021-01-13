@@ -25,13 +25,13 @@ class UserResponse {
 export class UserResolver {
   @Query(() => User, { nullable: true })
   async isLoggedIn(@Ctx() ctx: MyContext) {
-    const { em, req } = ctx;
+    const { req } = ctx;
 
     if (!req.session.userId) {
       return null;
     }
 
-    return await em.findOne(User, { id: req.session.userId });
+    return await User.findOne(req.session.userId);
   }
 
   @Mutation(() => UserResponse)
@@ -40,7 +40,7 @@ export class UserResolver {
     @Arg("password", () => String) password: string,
     @Ctx() ctx: MyContext
   ): Promise<UserResponse> {
-    const { em, req } = ctx;
+    const { req } = ctx;
 
     if (password.length < 6) {
       return {
@@ -53,7 +53,7 @@ export class UserResolver {
       };
     }
 
-    const userExists = await em.findOne(User, { email });
+    const userExists = await User.findOne({ where: { email } });
     if (userExists) {
       return {
         errors: [
@@ -66,8 +66,7 @@ export class UserResolver {
     }
 
     const hashedPassword = await argon2.hash(password);
-    const newUser = em.create(User, { email: email.toLowerCase(), password: hashedPassword });
-    await em.persistAndFlush(newUser);
+    const newUser = await User.create({ email, password: hashedPassword }).save();
 
     req.session.userId = newUser.id;
     return { user: newUser };
@@ -79,11 +78,11 @@ export class UserResolver {
     @Arg("password", () => String) password: string,
     @Ctx() ctx: MyContext
   ): Promise<UserResponse> {
-    const { em, req } = ctx;
+    const { req } = ctx;
 
     // If user DNE, return error
     const errMsg = "Email or Password is incorrect";
-    const user = await em.findOne(User, { email: email.toLowerCase() });
+    const user = await User.findOne({ where: { email } });
     if (!user) {
       return {
         errors: [
