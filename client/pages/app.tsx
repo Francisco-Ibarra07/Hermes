@@ -13,6 +13,7 @@ import {
 } from "@chakra-ui/react";
 import Image from "next/image";
 import { useState } from "react";
+import ChatMessage from "../components/ChatMessage";
 import FriendCard from "../components/FriendCard";
 
 const app = () => {
@@ -42,9 +43,11 @@ const app = () => {
     let list = [];
     for (let i = 0; i < count; i++) {
       list.push(
-        <Text key={`msg-${i}`} textAlign={i % 2 == 0 ? "left" : "right"}>
-          message-{i}
-        </Text>
+        <ChatMessage bg="blue.100" alignRight={i % 2 == 0}>
+          Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor Lorem ipsum
+          dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor Lorem ipsum dolor sit
+          amet, consectetur adipiscing elit, sed do eiusmod tempor
+        </ChatMessage>
       );
     }
 
@@ -117,15 +120,9 @@ const app = () => {
         </Flex>
 
         {/* Main Messages */}
-        <Flex h="80%" p={5} border="1px" align="center" justify="center">
-          <Flex
-            h="100%"
-            w="100%"
-            overflow="hidden"
-            _hover={{ overflow: "auto" }}
-            flexDir="column-reverse"
-          >
-            {fillMessages(40)}
+        <Flex h="80%" border="1px" align="center" justify="center">
+          <Flex h="100%" w="100%" overflow="auto" flexDir="column-reverse">
+            {fillMessages(10)}
           </Flex>
         </Flex>
 
