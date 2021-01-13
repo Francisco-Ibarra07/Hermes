@@ -44,7 +44,12 @@ const app = () => {
     let list = [];
     for (let i = 0; i < count; i++) {
       list.push(
-        <ChatMessage key={`msg-${i}`} bg="blue.100" isFirst={i == 0} alignRight={i % 2 == 0}>
+        <ChatMessage
+          key={`msg-${i}`}
+          bg={i % 2 == 0 ? "blue.200" : "gray.200"}
+          isFirst={i == 0}
+          alignRight={i % 2 == 0}
+        >
           Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor Lorem ipsum
           dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor Lorem ipsum dolor sit
           amet, consectetur adipiscing elit, sed do eiusmod tempor
