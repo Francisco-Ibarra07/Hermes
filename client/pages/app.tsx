@@ -7,6 +7,9 @@ import {
   Heading,
   Box,
   ButtonGroup,
+  InputGroup,
+  InputLeftElement,
+  Input,
 } from "@chakra-ui/react";
 import Image from "next/image";
 import { useState } from "react";
@@ -63,6 +66,7 @@ const app = () => {
           </Flex>
           {/* Settings + Add Friend */}
           <Flex align="center" justify="center">
+            {/* TODO: Consider replacing these with 'react-icons' library */}
             <ButtonGroup spacing={1}>
               <Box as="button">
                 <ChakraImage src="/images/settings-icon.png" alt="settings" boxSize={30} />
@@ -75,8 +79,14 @@ const app = () => {
         </Flex>
 
         {/* Search Bar */}
-        <Flex bg="yellow.100" h="10%">
-          Search Bar
+        <Flex h="10%" mx={5} align="center" justify="center">
+          <InputGroup>
+            <InputLeftElement
+              pointerEvents="none"
+              children={<ChakraImage src="/images/search-icon.png" alt="search" boxSize={30} />}
+            />
+            <Input type="text" placeholder="Search messages" />
+          </InputGroup>
         </Flex>
 
         {/* Friends List */}
@@ -88,7 +98,7 @@ const app = () => {
 
       {/* Right Tab */}
       <Flex w="81%" h="100%" flexDir="column">
-        {/* Top */}
+        {/* Name of reciever + Start Call */}
         <Flex h="10%" p={5} border="1px" align="center" justify="space-between">
           {/* Image + Name of person currently talking to */}
           <Flex align="center" justify="center">
