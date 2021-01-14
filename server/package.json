@@ -5,6 +5,7 @@
   "main": "index.js",
   "scripts": {
     "watch": "tsc -w",
+    "redis": "redis-server",
     "dev": "nodemon dist/index.js",
     "once": "node dist/index.js"
   },
