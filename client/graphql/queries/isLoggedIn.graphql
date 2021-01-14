@@ -1,0 +1,6 @@
+query isLoggedIn {
+  isLoggedIn {
+    id
+    email
+  }
+}

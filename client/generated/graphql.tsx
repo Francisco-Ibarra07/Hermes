@@ -29,7 +29,7 @@ export type QueryPostArgs = {
 
 export type Post = {
   __typename?: 'Post';
-  id: Scalars['Int'];
+  id: Scalars['Float'];
   title: Scalars['String'];
   createdAt: Scalars['String'];
   updatedAt: Scalars['String'];
@@ -37,7 +37,7 @@ export type Post = {
 
 export type User = {
   __typename?: 'User';
-  id: Scalars['Int'];
+  id: Scalars['Float'];
   email: Scalars['String'];
   createdAt: Scalars['String'];
   updatedAt: Scalars['String'];
@@ -132,6 +132,17 @@ export type SignupMutation = (
   ) }
 );
 
+export type IsLoggedInQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type IsLoggedInQuery = (
+  { __typename?: 'Query' }
+  & { isLoggedIn?: Maybe<(
+    { __typename?: 'User' }
+    & Pick<User, 'id' | 'email'>
+  )> }
+);
+
 
 export const LoginDocument = gql`
     mutation Login($email: String!, $password: String!) {
@@ -168,4 +179,16 @@ export const SignupDocument = gql`
 
 export function useSignupMutation() {
   return Urql.useMutation<SignupMutation, SignupMutationVariables>(SignupDocument);
+};
+export const IsLoggedInDocument = gql`
+    query isLoggedIn {
+  isLoggedIn {
+    id
+    email
+  }
+}
+    `;
+
+export function useIsLoggedInQuery(options: Omit<Urql.UseQueryArgs<IsLoggedInQueryVariables>, 'query'> = {}) {
+  return Urql.useQuery<IsLoggedInQuery>({ query: IsLoggedInDocument, ...options });
 };
