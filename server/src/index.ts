@@ -19,7 +19,7 @@ import { User } from "./entities/User";
 const main = async () => {
   console.log("started");
 
-  const conn = await createConnection({
+  await createConnection({
     type: "postgres",
     database: "hermes2",
     username: "fibarra",
@@ -73,7 +73,7 @@ const main = async () => {
       res,
     }),
   });
-  apolloServer.applyMiddleware({ app });
+  apolloServer.applyMiddleware({ app, cors: false });
 
   app.listen(5000, () => {
     console.log("Server listening on http://localhost:5000");
