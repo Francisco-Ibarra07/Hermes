@@ -2,20 +2,19 @@ import React from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { Box, Button, ButtonGroup, Flex, Spinner, Text } from "@chakra-ui/react";
-import { useIsLoggedInQuery } from "../generated/graphql";
+import { useIsLoggedInQuery, useLogoutMutation } from "../generated/graphql";
 
 function NavBar() {
   const [{ data, fetching }] = useIsLoggedInQuery();
+  const [{ fetching: logoutFetch }, logoutUser] = useLogoutMutation();
   let navLinks;
 
   // Loading
   if (fetching) {
-    console.log("fetching");
     return <Spinner />;
   }
   // Isn't logged in
   else if (!data?.isLoggedIn) {
-    console.log("Not logged in: ", data);
     navLinks = (
       <>
         <Link href="/login">
@@ -29,8 +28,11 @@ function NavBar() {
   }
   // Logged in
   else {
-    console.log("Already logged in", data);
-    navLinks = <Button>Logout</Button>;
+    navLinks = (
+      <Button isLoading={logoutFetch} onClick={() => logoutUser()}>
+        Logout
+      </Button>
+    );
   }
 
   return (
