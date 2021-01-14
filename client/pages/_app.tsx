@@ -10,6 +10,7 @@ const client = createClient({
 function MyApp({ Component, pageProps }: AppProps) {
   return (
     <Provider value={client}>
+      <title>Hermes Messenger</title>
       <ChakraProvider resetCSS theme={theme}>
         <Component {...pageProps} />
       </ChakraProvider>
