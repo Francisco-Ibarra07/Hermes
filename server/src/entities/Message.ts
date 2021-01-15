@@ -10,11 +10,6 @@ import {
 } from "typeorm";
 import { Chat } from "./Chat";
 
-enum MessageType {
-  TEXT = "TEXT",
-  FILE = "FILE",
-}
-
 @ObjectType()
 @Entity()
 export class Message extends BaseEntity {
@@ -23,8 +18,8 @@ export class Message extends BaseEntity {
   id!: number;
 
   @Field()
-  @Column(() => String)
-  type: MessageType;
+  @Column()
+  messageType!: string;
 
   @Field()
   @Column()
