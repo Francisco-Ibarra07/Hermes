@@ -13,6 +13,7 @@ import { createConnection } from "typeorm";
 import { User } from "./entities/User";
 import { Chat } from "./entities/Chat";
 import { Message } from "./entities/Message";
+import { ChatResolver } from "./resolvers/ChatResolver";
 
 // Main function so I can do 'top-level' async/await
 const main = async () => {
@@ -20,7 +21,7 @@ const main = async () => {
 
   await createConnection({
     type: "postgres",
-    database: "hermes2",
+    database: "hermesdb",
     username: "fibarra",
     password: "fibarra",
     logging: !__prod__,
@@ -60,7 +61,7 @@ const main = async () => {
   );
 
   const schema = await buildSchema({
-    resolvers: [UserResolver],
+    resolvers: [UserResolver, ChatResolver],
     validate: false,
   });
 
