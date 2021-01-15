@@ -3,19 +3,32 @@ import { User } from "../entities/User";
 import { isAuth } from "../middleware/isAuth";
 import { MyContext } from "../types";
 import { Arg, Ctx, Mutation, Query, Resolver, UseMiddleware } from "type-graphql";
+import { Any, getConnection } from "typeorm";
 
 @Resolver()
 export class ChatResolver {
   // Get all chats from a user given a userId
   @UseMiddleware(isAuth)
   @Query(() => [Chat])
-  async chats(@Ctx() ctx: MyContext) {
+  async chats(@Ctx() ctx: MyContext): Promise<Chat[]> {
     const { req } = ctx;
-    const params = { userId: req.session.userId };
-    console.log(params);
 
-    // TODO: Get chats based on userId
-    const r = await Chat.createQueryBuilder().select("*").orderBy("updatedAt", "DESC").getMany();
+    // Get user
+    const targetUser = await User.findOne(req.session.userId);
+    if (!targetUser) {
+      throw new Error("User not found");
+    }
+    console.log("target user: ", targetUser);
+
+    // Get chats that 'targetUser' is apart of
+    const r = await getConnection()
+      .getRepository(Chat)
+      .createQueryBuilder("chat")
+      .leftJoinAndSelect("chat.users", "user")
+      .where(`user.id = ${targetUser.id}`)
+      .getMany();
+
+    console.log("response: ", r);
 
     return r;
   }
