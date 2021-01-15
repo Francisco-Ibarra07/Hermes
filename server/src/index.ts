@@ -12,8 +12,9 @@ import session from "express-session";
 import connectRedis from "connect-redis";
 import { MyContext } from "./types";
 import { createConnection } from "typeorm";
-import { Post } from "./entities/Post";
 import { User } from "./entities/User";
+import { Chat } from "./entities/Chat";
+import { Message } from "./entities/Message";
 
 // Main function so I can do 'top-level' async/await
 const main = async () => {
@@ -25,8 +26,8 @@ const main = async () => {
     username: "fibarra",
     password: "fibarra",
     logging: !__prod__,
-    synchronize: !__prod__,
-    entities: [Post, User],
+    synchronize: true,
+    entities: [User, Chat, Message],
   });
 
   const app = express();
