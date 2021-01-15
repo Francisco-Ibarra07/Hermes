@@ -4,8 +4,6 @@ import express from "express";
 import { ApolloServer } from "apollo-server-express";
 import cors from "cors";
 import { buildSchema } from "type-graphql";
-import { TestResolver } from "./resolvers/TestResolver";
-import { PostResolver } from "./resolvers/PostResolver";
 import { UserResolver } from "./resolvers/UserResolver";
 import redis from "redis";
 import session from "express-session";
@@ -62,7 +60,7 @@ const main = async () => {
   );
 
   const schema = await buildSchema({
-    resolvers: [TestResolver, PostResolver, UserResolver],
+    resolvers: [UserResolver],
     validate: false,
   });
 
