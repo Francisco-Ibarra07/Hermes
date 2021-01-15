@@ -13,11 +13,6 @@ import {
 import { Message } from "./Message";
 import { User } from "./User";
 
-enum ChatType {
-  GROUP = "GROUP",
-  INDIVIDUAL = "INDIVIDUAL",
-}
-
 @ObjectType()
 @Entity()
 export class Chat extends BaseEntity {
@@ -26,9 +21,10 @@ export class Chat extends BaseEntity {
   id!: number;
 
   @Field()
-  @Column(() => String)
-  type!: ChatType;
+  @Column()
+  chatType!: String;
 
+  @Field(() => [User])
   @ManyToMany(() => User)
   @JoinTable()
   users: User[];
