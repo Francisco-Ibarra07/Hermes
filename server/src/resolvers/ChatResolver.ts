@@ -1,5 +1,6 @@
 import { Chat } from "../entities/Chat";
 import { User } from "../entities/User";
+import { Message } from "../entities/Message";
 import { isAuth } from "../middleware/isAuth";
 import { MyContext } from "../types";
 import { Arg, Ctx, Mutation, Query, Resolver, UseMiddleware } from "type-graphql";
@@ -55,8 +56,28 @@ export class ChatResolver {
     return chat;
   }
 
-  // Add a user to a chat given the userId
   // Add a message to the chat
+  @UseMiddleware(isAuth)
+  @Mutation(() => Message)
+  async createMessage(
+    @Arg("chatId", () => Number) chatId: number,
+    @Arg("messageType", () => String) messageType: string,
+    @Arg("content", () => String) content: string
+  ): Promise<Message> {
+    const chat = await Chat.findOne(chatId);
+    if (!chat) {
+      throw new Error("Chat does not exist. chatId: " + chatId);
+    }
+
+    const newMessage = await Message.create({ chatId, chat, messageType, content }).save();
+
+    chat.updatedAt = new Date();
+    await chat.save();
+
+    return newMessage;
+  }
+
+  // Add a user to a chat given the userId
 
   // Delete a person from a chat given their userId and chatId
   // Delete a chat given the chatId
