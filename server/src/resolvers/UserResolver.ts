@@ -38,6 +38,7 @@ export class UserResolver {
 
   @Mutation(() => UserResponse)
   async signupUser(
+    @Arg("name", () => String) name: string,
     @Arg("email", () => String) email: string,
     @Arg("password", () => String) password: string,
     @Ctx() ctx: MyContext
@@ -69,7 +70,7 @@ export class UserResolver {
 
     const screenName = genScreenName();
     const hashedPassword = await argon2.hash(password);
-    const newUser = await User.create({ email, password: hashedPassword, screenName }).save();
+    const newUser = await User.create({ email, name, password: hashedPassword, screenName }).save();
 
     req.session.userId = newUser.id;
     return { user: newUser };
