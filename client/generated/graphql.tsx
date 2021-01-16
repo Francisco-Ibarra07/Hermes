@@ -16,69 +16,77 @@ export type Scalars = {
 
 export type Query = {
   __typename?: 'Query';
-  hello: Scalars['String'];
-  posts: Array<Post>;
-  post?: Maybe<Post>;
   isLoggedIn?: Maybe<User>;
+  chats: Array<Chat>;
+  getMessages: Array<Message>;
 };
 
 
-export type QueryPostArgs = {
-  id: Scalars['Int'];
-};
-
-export type Post = {
-  __typename?: 'Post';
-  id: Scalars['Float'];
-  title: Scalars['String'];
-  createdAt: Scalars['String'];
-  updatedAt: Scalars['String'];
+export type QueryGetMessagesArgs = {
+  chatId: Scalars['Float'];
 };
 
 export type User = {
   __typename?: 'User';
   id: Scalars['Float'];
+  screenName: Scalars['String'];
+  name: Scalars['String'];
   email: Scalars['String'];
+  createdAt: Scalars['String'];
+  updatedAt: Scalars['String'];
+};
+
+export type Chat = {
+  __typename?: 'Chat';
+  id: Scalars['Float'];
+  chatType: Scalars['String'];
+  users: Array<User>;
+  createdAt: Scalars['String'];
+  updatedAt: Scalars['String'];
+};
+
+export type Message = {
+  __typename?: 'Message';
+  id: Scalars['Float'];
+  messageType: Scalars['String'];
+  content: Scalars['String'];
+  chatId: Scalars['Float'];
   createdAt: Scalars['String'];
   updatedAt: Scalars['String'];
 };
 
 export type Mutation = {
   __typename?: 'Mutation';
-  createPost: Post;
-  updatePost?: Maybe<Post>;
-  deletePost: Scalars['Boolean'];
   signupUser: UserResponse;
   loginUser: UserResponse;
   logoutUser: Scalars['Boolean'];
-};
-
-
-export type MutationCreatePostArgs = {
-  title: Scalars['String'];
-};
-
-
-export type MutationUpdatePostArgs = {
-  title: Scalars['String'];
-  id: Scalars['Int'];
-};
-
-
-export type MutationDeletePostArgs = {
-  id: Scalars['Int'];
+  createChat: Chat;
+  createMessage: Message;
 };
 
 
 export type MutationSignupUserArgs = {
   password: Scalars['String'];
   email: Scalars['String'];
+  name: Scalars['String'];
 };
 
 
 export type MutationLoginUserArgs = {
   password: Scalars['String'];
   email: Scalars['String'];
+};
+
+
+export type MutationCreateChatArgs = {
+  screenNames: Array<Scalars['String']>;
+};
+
+
+export type MutationCreateMessageArgs = {
+  content: Scalars['String'];
+  messageType: Scalars['String'];
+  chatId: Scalars['Float'];
 };
 
 export type UserResponse = {
@@ -124,6 +132,7 @@ export type LogoutMutation = (
 export type SignupMutationVariables = Exact<{
   email: Scalars['String'];
   password: Scalars['String'];
+  name: Scalars['String'];
 }>;
 
 
@@ -181,8 +190,8 @@ export function useLogoutMutation() {
   return Urql.useMutation<LogoutMutation, LogoutMutationVariables>(LogoutDocument);
 };
 export const SignupDocument = gql`
-    mutation Signup($email: String!, $password: String!) {
-  signupUser(email: $email, password: $password) {
+    mutation Signup($email: String!, $password: String!, $name: String!) {
+  signupUser(email: $email, password: $password, name: $name) {
     errors {
       field
       message

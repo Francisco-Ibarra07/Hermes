@@ -15,6 +15,7 @@ import { useRouter } from "next/router";
 import { toErrorMap } from "../utils/toErrorMap";
 
 interface SignupFormValues {
+  name: string;
   email: string;
   password: string;
 }
@@ -53,13 +54,26 @@ const Signup = () => {
 
       <Flex mt="200px" align="center" justify="center">
         <Flex w="40%" h="50%" p={5} border="1px" borderRadius="md" boxShadow="lg" flexDir="column">
-          <Formik initialValues={{ email: "", password: "" }} onSubmit={handleFormSubmit}>
+          <Formik initialValues={{ email: "", password: "", name: "" }} onSubmit={handleFormSubmit}>
             {(props: FormikProps<SignupFormValues>) => (
               <Form>
                 <Flex flexDir="column" align="center">
                   <Heading as="h1" size="xl" my={5}>
                     Signup
                   </Heading>
+
+                  <Field name="name">
+                    {(props: FieldProps) => (
+                      <FormControl
+                        my={5}
+                        isInvalid={!!props.form.errors.name && !!props.form.touched.name}
+                      >
+                        <FormLabel htmlFor="name">Name</FormLabel>
+                        <Input {...props.field} id="name" placeholder="name" type="name" />
+                        <FormErrorMessage>{props.form.errors.name}</FormErrorMessage>
+                      </FormControl>
+                    )}
+                  </Field>
 
                   <Field name="email">
                     {(props: FieldProps) => (
