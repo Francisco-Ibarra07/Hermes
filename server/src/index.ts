@@ -21,11 +21,11 @@ const main = async () => {
 
   await createConnection({
     type: "postgres",
-    database: "hermesdb",
+    database: "hermes",
     username: "fibarra",
     password: "fibarra",
     logging: !__prod__,
-    synchronize: true,
+    synchronize: !__prod__,
     entities: [User, Chat, Message],
   });
 

@@ -17,6 +17,10 @@ export class User extends BaseEntity {
 
   @Field()
   @Column({ unique: true })
+  screenName!: string;
+
+  @Field()
+  @Column({ unique: true })
   email!: string;
 
   @Column()

@@ -3,6 +3,7 @@ import { MyContext } from "../types";
 import { Arg, Ctx, Field, Mutation, ObjectType, Query, Resolver } from "type-graphql";
 import argon2 from "argon2";
 import { COOKIE_NAME } from "../constants";
+import { genScreenName } from "../utils/uniqueName";
 
 @ObjectType()
 class FieldError {
@@ -66,8 +67,9 @@ export class UserResolver {
       };
     }
 
+    const screenName = genScreenName();
     const hashedPassword = await argon2.hash(password);
-    const newUser = await User.create({ email, password: hashedPassword }).save();
+    const newUser = await User.create({ email, password: hashedPassword, screenName }).save();
 
     req.session.userId = newUser.id;
     return { user: newUser };
