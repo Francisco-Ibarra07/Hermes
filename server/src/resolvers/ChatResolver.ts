@@ -18,7 +18,6 @@ export class ChatResolver {
     if (!targetUser) {
       throw new Error("User not found");
     }
-    console.log("target user: ", targetUser);
 
     // TODO: There's gotta be an easier way to do this (all queries below)
     // Hopefully i can get it down to just 1 query instead of 2 'join' queries
@@ -33,12 +32,9 @@ export class ChatResolver {
       .getMany();
 
     const targetChatIds = chatList.map((chat) => chat.id);
-    console.log("Chat ids: ", targetChatIds);
 
     // Return chats matching target 'chatIds'
     const chats = await Chat.find({ relations: ["users"], where: { id: Any(targetChatIds) } });
-
-    console.log("response: ", chats);
 
     return chats;
   }
