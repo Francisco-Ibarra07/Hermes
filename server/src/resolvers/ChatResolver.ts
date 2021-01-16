@@ -40,6 +40,17 @@ export class ChatResolver {
     return chats;
   }
 
+  @UseMiddleware(isAuth)
+  @Query(() => [Message])
+  async getMessages(@Arg("chatId", () => Number) chatId: number) {
+    const chat = await Chat.findOne(chatId, { relations: ["messages"] });
+    if (!chat) {
+      throw new Error("Chat does not exist. chatId: " + chatId);
+    }
+
+    return chat.messages;
+  }
+
   // Create a chat given list of screen names
   @UseMiddleware(isAuth)
   @Mutation(() => Chat)
