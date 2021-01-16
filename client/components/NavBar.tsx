@@ -3,11 +3,18 @@ import Image from "next/image";
 import Link from "next/link";
 import { Box, Button, ButtonGroup, Flex, Spinner, Text } from "@chakra-ui/react";
 import { useIsLoggedInQuery, useLogoutMutation } from "../generated/graphql";
+import { useRouter } from "next/router";
 
 function NavBar() {
+  const router = useRouter();
   const [{ data, fetching }] = useIsLoggedInQuery();
   const [{ fetching: logoutFetch }, logoutUser] = useLogoutMutation();
   let navLinks;
+
+  const handleLogout = async () => {
+    await logoutUser();
+    router.push("/");
+  };
 
   // Loading
   if (fetching) {
@@ -29,7 +36,7 @@ function NavBar() {
   // Logged in
   else {
     navLinks = (
-      <Button isLoading={logoutFetch} onClick={() => logoutUser()}>
+      <Button isLoading={logoutFetch} onClick={handleLogout}>
         Logout
       </Button>
     );
