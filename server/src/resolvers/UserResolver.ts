@@ -45,6 +45,17 @@ export class UserResolver {
   ): Promise<UserResponse> {
     const { req } = ctx;
 
+    if (name.length === 0) {
+      return {
+        errors: [
+          {
+            field: "name",
+            message: "name cannot be empty",
+          },
+        ],
+      };
+    }
+
     if (password.length < 6) {
       return {
         errors: [
