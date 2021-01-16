@@ -3,7 +3,7 @@ import { User } from "../entities/User";
 import { isAuth } from "../middleware/isAuth";
 import { MyContext } from "../types";
 import { Arg, Ctx, Mutation, Query, Resolver, UseMiddleware } from "type-graphql";
-import { Any, getConnection } from "typeorm";
+import { Any, getConnection, In } from "typeorm";
 
 @Resolver()
 export class ChatResolver {
@@ -39,22 +39,18 @@ export class ChatResolver {
     return chats;
   }
 
-  // Create a chat given these userId's
-  // @UseMiddleware(isAuth)
+  // Create a chat given list of screen names
+  @UseMiddleware(isAuth)
   @Mutation(() => Chat)
-  async createChat(@Arg("userIds", () => [Number]) userIds: number[]): Promise<Chat> {
-    console.log("Creating chat: ", userIds, "INDIVIDUAL");
-
+  async createChat(@Arg("screenNames", () => [String]) screenNames: string[]): Promise<Chat> {
     // Get users
-    const users = await User.findByIds(userIds);
-    if (users.length !== userIds.length) {
+    const users = await User.find({ where: { screenName: In(screenNames) } });
+    if (users.length !== screenNames.length) {
       throw new Error("Not all user ids were found");
     }
-    console.log("Users found: ", users);
 
     // Create the chat
-    const chat = await Chat.create({ chatType: "INDIVIDUAL", users, messages: [] }).save();
-    console.log("New chat created: ", chat);
+    const chat = await Chat.create({ chatType: "", users, messages: [] }).save();
 
     return chat;
   }
