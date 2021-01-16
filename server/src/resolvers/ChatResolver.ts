@@ -20,17 +20,27 @@ export class ChatResolver {
     }
     console.log("target user: ", targetUser);
 
-    // Get chats that 'targetUser' is apart of
-    const r = await getConnection()
+    // TODO: There's gotta be an easier way to do this (all queries below)
+    // Hopefully i can get it down to just 1 query instead of 2 'join' queries
+
+    // Get chatIds that 'targetUser' is apart of
+    const chatList = await getConnection()
       .getRepository(Chat)
       .createQueryBuilder("chat")
-      .leftJoinAndSelect("chat.users", "user")
+      .select("chat.id")
+      .leftJoin("chat.users", "user")
       .where(`user.id = ${targetUser.id}`)
       .getMany();
 
-    console.log("response: ", r);
+    const targetChatIds = chatList.map((chat) => chat.id);
+    console.log("Chat ids: ", targetChatIds);
 
-    return r;
+    // Return chats matching target 'chatIds'
+    const chats = await Chat.find({ relations: ["users"], where: { id: Any(targetChatIds) } });
+
+    console.log("response: ", chats);
+
+    return chats;
   }
 
   // Create a chat given these userId's
