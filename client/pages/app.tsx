@@ -14,18 +14,26 @@ import {
   Spinner,
 } from "@chakra-ui/react";
 import Image from "next/image";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import ChatMessage from "../components/ChatMessage";
 import FriendCard from "../components/FriendCard";
-import { useGetChatsQuery, useIsLoggedInQuery } from "../generated/graphql";
+import { useGetChatsQuery, useIsLoggedInQuery, useMessagesQuery } from "../generated/graphql";
 
 const app = () => {
+  const activeChatIdRef = useRef(-1);
   const [activeCardNum, setActiveCardNum] = useState(0);
   const [{ data: userData }] = useIsLoggedInQuery();
-  const [{ fetching, data: chatsData }] = useGetChatsQuery();
+  const [{ fetching: fetchingChats, data: chatsData }] = useGetChatsQuery();
+  const [{ fetching: fetchingMessages, data: messagesData }] = useMessagesQuery({
+    variables: {
+      chatId: activeChatIdRef.current,
+    },
+    pause: fetchingChats || activeChatIdRef.current == -1,
+  });
 
-  const onFriendCardClick = (key: number) => {
+  const onFriendCardClick = (key: number, chatId: number) => {
     setActiveCardNum(key);
+    activeChatIdRef.current = chatId;
   };
 
   const fillFriendsWithMockData = (count: number) => {
@@ -35,6 +43,7 @@ const app = () => {
         <FriendCard
           key={i}
           cardKey={i}
+          chatId={-1}
           name="John Smith"
           caption="Last message on: 10/20/20"
           isActive={i == activeCardNum}
@@ -47,7 +56,6 @@ const app = () => {
   };
 
   const fillFriends = () => {
-    console.log("Chats: ", chatsData);
     // Map through chat list and return FriendCard's for each one
     let list = chatsData?.chats.map((chat, index) => {
       // Format the date
@@ -59,6 +67,7 @@ const app = () => {
         <FriendCard
           key={index}
           cardKey={index}
+          chatId={chat.id}
           name={chat.users.length !== 0 ? chat.users[0].name : `chat-${index}`}
           caption={`Last message on: ${formattedDate}`}
           isActive={index == activeCardNum}
@@ -70,7 +79,7 @@ const app = () => {
     return list;
   };
 
-  const fillMessages = (count: number) => {
+  const fillMessagesWithMockData = (count: number) => {
     let list = [];
     for (let i = 0; i < count; i++) {
       list.push(
@@ -86,6 +95,29 @@ const app = () => {
         </ChatMessage>
       );
     }
+
+    return list;
+  };
+
+  const fillMessages = () => {
+    if (fetchingChats || fetchingMessages) {
+      return <Spinner />;
+    }
+
+    console.log("messages grabbed: ", messagesData);
+
+    let list = messagesData?.getMessages.map((msg, index) => {
+      return (
+        <ChatMessage
+          key={`msg-${index}`}
+          bg={index % 2 == 0 ? "blue.200" : "gray.200"}
+          isFirst={index == 0}
+          alignRight={index % 2 == 0}
+        >
+          {msg.content}
+        </ChatMessage>
+      );
+    });
 
     return list;
   };
@@ -123,7 +155,7 @@ const app = () => {
     );
   };
 
-  if (fetching) {
+  if (fetchingChats) {
     return <Spinner />;
   }
 
@@ -190,7 +222,7 @@ const app = () => {
             display="flex"
             flexDir="column-reverse"
           >
-            {fillMessages(5)}
+            {userData?.isLoggedIn ? fillMessages() : fillMessagesWithMockData(10)}
           </Stack>
         </Flex>
 
