@@ -1,6 +1,5 @@
 query isLoggedIn {
   isLoggedIn {
-    id
-    email
+    ...UserFields
   }
 }

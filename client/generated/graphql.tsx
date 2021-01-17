@@ -101,6 +101,11 @@ export type FieldError = {
   message: Scalars['String'];
 };
 
+export type UserFieldsFragment = (
+  { __typename?: 'User' }
+  & Pick<User, 'id' | 'name' | 'screenName' | 'email'>
+);
+
 export type LoginMutationVariables = Exact<{
   email: Scalars['String'];
   password: Scalars['String'];
@@ -116,7 +121,7 @@ export type LoginMutation = (
       & Pick<FieldError, 'field' | 'message'>
     )>>, user?: Maybe<(
       { __typename?: 'User' }
-      & Pick<User, 'id' | 'email'>
+      & UserFieldsFragment
     )> }
   ) }
 );
@@ -145,7 +150,7 @@ export type SignupMutation = (
       & Pick<FieldError, 'field' | 'message'>
     )>>, user?: Maybe<(
       { __typename?: 'User' }
-      & Pick<User, 'id' | 'email'>
+      & UserFieldsFragment
     )> }
   ) }
 );
@@ -157,11 +162,18 @@ export type IsLoggedInQuery = (
   { __typename?: 'Query' }
   & { isLoggedIn?: Maybe<(
     { __typename?: 'User' }
-    & Pick<User, 'id' | 'email'>
+    & UserFieldsFragment
   )> }
 );
 
-
+export const UserFieldsFragmentDoc = gql`
+    fragment UserFields on User {
+  id
+  name
+  screenName
+  email
+}
+    `;
 export const LoginDocument = gql`
     mutation Login($email: String!, $password: String!) {
   loginUser(email: $email, password: $password) {
@@ -170,12 +182,11 @@ export const LoginDocument = gql`
       message
     }
     user {
-      id
-      email
+      ...UserFields
     }
   }
 }
-    `;
+    ${UserFieldsFragmentDoc}`;
 
 export function useLoginMutation() {
   return Urql.useMutation<LoginMutation, LoginMutationVariables>(LoginDocument);
@@ -197,12 +208,11 @@ export const SignupDocument = gql`
       message
     }
     user {
-      id
-      email
+      ...UserFields
     }
   }
 }
-    `;
+    ${UserFieldsFragmentDoc}`;
 
 export function useSignupMutation() {
   return Urql.useMutation<SignupMutation, SignupMutationVariables>(SignupDocument);
@@ -210,11 +220,10 @@ export function useSignupMutation() {
 export const IsLoggedInDocument = gql`
     query isLoggedIn {
   isLoggedIn {
-    id
-    email
+    ...UserFields
   }
 }
-    `;
+    ${UserFieldsFragmentDoc}`;
 
 export function useIsLoggedInQuery(options: Omit<Urql.UseQueryArgs<IsLoggedInQueryVariables>, 'query'> = {}) {
   return Urql.useQuery<IsLoggedInQuery>({ query: IsLoggedInDocument, ...options });
