@@ -3,7 +3,12 @@ import theme from "../theme";
 import { AppProps } from "next/app";
 import { Provider, createClient, dedupExchange, fetchExchange } from "urql";
 import { cacheExchange, Data } from "@urql/exchange-graphcache";
-import { IsLoggedInDocument, IsLoggedInQuery, LoginMutation } from "../generated/graphql";
+import {
+  IsLoggedInDocument,
+  IsLoggedInQuery,
+  LoginMutation,
+  SignupMutation,
+} from "../generated/graphql";
 
 const client = createClient({
   url: "http://localhost:5000/graphql",
@@ -25,6 +30,20 @@ const client = createClient({
 
               const cData = data as IsLoggedInQuery;
               cData.isLoggedIn = cResult.loginUser.user;
+
+              return cData as Data;
+            });
+          },
+          signupUser: (result, _args, cache) => {
+            cache.updateQuery({ query: IsLoggedInDocument }, (data) => {
+              // Workaround: typecast to get strict typing on this function
+              const cResult = result as SignupMutation;
+              if (cResult.signupUser.errors) {
+                return data;
+              }
+
+              const cData = data as IsLoggedInQuery;
+              cData.isLoggedIn = cResult.signupUser.user;
 
               return cData as Data;
             });
