@@ -50,11 +50,6 @@ const app = () => {
     console.log("Chats: ", chatsData);
     // Map through chat list and return FriendCard's for each one
     let list = chatsData?.chats.map((chat, index) => {
-      // Find name of other user (not client's name)
-      const friendName = chat.users.find(
-        (user) => user.screenName !== userData?.isLoggedIn?.screenName
-      );
-
       // Format the date
       const date = new Date(parseInt(chat.updatedAt));
       const formattedDate = date.toLocaleString();
@@ -64,7 +59,7 @@ const app = () => {
         <FriendCard
           key={index}
           cardKey={index}
-          name={friendName?.name ? friendName.name : "null"}
+          name={chat.users.length !== 0 ? chat.users[0].name : `chat-${index}`}
           caption={`Last message on: ${formattedDate}`}
           isActive={index == activeCardNum}
           onClickHandler={onFriendCardClick}
