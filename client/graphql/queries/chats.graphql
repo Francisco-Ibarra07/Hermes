@@ -1,0 +1,11 @@
+query getChats {
+  chats {
+    id
+    chatType
+    createdAt
+    updatedAt
+    users {
+      ...UserFields
+    }
+  }
+}

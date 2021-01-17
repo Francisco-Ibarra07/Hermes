@@ -155,6 +155,21 @@ export type SignupMutation = (
   ) }
 );
 
+export type GetChatsQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type GetChatsQuery = (
+  { __typename?: 'Query' }
+  & { chats: Array<(
+    { __typename?: 'Chat' }
+    & Pick<Chat, 'id' | 'chatType' | 'createdAt' | 'updatedAt'>
+    & { users: Array<(
+      { __typename?: 'User' }
+      & UserFieldsFragment
+    )> }
+  )> }
+);
+
 export type IsLoggedInQueryVariables = Exact<{ [key: string]: never; }>;
 
 
@@ -216,6 +231,23 @@ export const SignupDocument = gql`
 
 export function useSignupMutation() {
   return Urql.useMutation<SignupMutation, SignupMutationVariables>(SignupDocument);
+};
+export const GetChatsDocument = gql`
+    query getChats {
+  chats {
+    id
+    chatType
+    createdAt
+    updatedAt
+    users {
+      ...UserFields
+    }
+  }
+}
+    ${UserFieldsFragmentDoc}`;
+
+export function useGetChatsQuery(options: Omit<Urql.UseQueryArgs<GetChatsQueryVariables>, 'query'> = {}) {
+  return Urql.useQuery<GetChatsQuery>({ query: GetChatsDocument, ...options });
 };
 export const IsLoggedInDocument = gql`
     query isLoggedIn {
