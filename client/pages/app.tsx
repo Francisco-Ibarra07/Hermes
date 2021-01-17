@@ -36,6 +36,7 @@ const app = () => {
           key={i}
           cardKey={i}
           name="John Smith"
+          caption="Last message on: 10/20/20"
           isActive={i == activeCardNum}
           onClickHandler={onFriendCardClick}
         />
@@ -46,17 +47,21 @@ const app = () => {
   };
 
   const fillFriends = () => {
+    console.log("Chats: ", chatsData);
     // Map through chat list and return FriendCard's for each one
     let list = chatsData?.chats.map((chat) => {
       // Find name of other user (not client's name)
       const friendName = chat.users.find(
         (user) => user.screenName !== userData?.isLoggedIn?.screenName
       );
+      const date = new Date(parseInt(chat.updatedAt));
+      const formattedDate = date.toLocaleString();
       return (
         <FriendCard
           key={chat.id}
           cardKey={chat.id}
           name={friendName?.name ? friendName.name : "null"}
+          caption={`Last message on: ${formattedDate}`}
           isActive={chat.id == activeCardNum}
           onClickHandler={onFriendCardClick}
         />
