@@ -35,7 +35,11 @@ export class ChatResolver {
     const targetChatIds = chatList.map((chat) => chat.id);
 
     // Return chats matching target 'chatIds'
-    const chats = await Chat.find({ relations: ["users"], where: { id: Any(targetChatIds) } });
+    const chats = await Chat.find({
+      relations: ["users"],
+      where: { id: Any(targetChatIds) },
+      order: { updatedAt: "DESC" },
+    });
 
     return chats;
   }
