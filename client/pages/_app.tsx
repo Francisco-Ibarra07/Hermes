@@ -2,17 +2,8 @@ import { ChakraProvider } from "@chakra-ui/react";
 import theme from "../theme";
 import { AppProps } from "next/app";
 import { Provider, createClient, dedupExchange, fetchExchange } from "urql";
-import { Cache, cacheExchange, QueryInput } from "@urql/exchange-graphcache";
-import { IsLoggedInQuery, LoginDocument, LoginMutation } from "../generated/graphql";
-
-function updateQueryWrapper<Result, Query>(
-  result: any,
-  cache: Cache,
-  input: QueryInput,
-  fn: (r: Result, q: Query) => Query
-) {
-  return cache.updateQuery(input, (data) => fn(result, data as any) as any);
-}
+import { cacheExchange, Data } from "@urql/exchange-graphcache";
+import { IsLoggedInDocument, IsLoggedInQuery, LoginMutation } from "../generated/graphql";
 
 const client = createClient({
   url: "http://localhost:5000/graphql",
@@ -24,23 +15,19 @@ const client = createClient({
     cacheExchange({
       updates: {
         Mutation: {
-          loginUser: (_result, args, cache) => {
-            updateQueryWrapper<LoginMutation, IsLoggedInQuery>(
-              _result,
-              cache,
-              { query: LoginDocument },
-              (result, query) => {
-                console.log("result: ", result);
-                console.log("query: ", query);
-                if (result.loginUser.errors) {
-                  return query;
-                } else {
-                  return {
-                    isLoggedIn: result.loginUser.user,
-                  };
-                }
+          loginUser: (result, _args, cache) => {
+            cache.updateQuery({ query: IsLoggedInDocument }, (data) => {
+              // Workaround: typecast to get strict typing on this function
+              const cResult = result as LoginMutation;
+              if (cResult.loginUser.errors) {
+                return data;
               }
-            );
+
+              const cData = data as IsLoggedInQuery;
+              cData.isLoggedIn = cResult.loginUser.user;
+
+              return cData as Data;
+            });
           },
         },
       },
