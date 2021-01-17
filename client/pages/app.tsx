@@ -20,7 +20,7 @@ import FriendCard from "../components/FriendCard";
 import { useGetChatsQuery, useIsLoggedInQuery } from "../generated/graphql";
 
 const app = () => {
-  const [activeCardNum, setActiveCardNum] = useState(1);
+  const [activeCardNum, setActiveCardNum] = useState(0);
   const [{ data: userData }] = useIsLoggedInQuery();
   const [{ fetching, data: chatsData }] = useGetChatsQuery();
 
@@ -49,20 +49,24 @@ const app = () => {
   const fillFriends = () => {
     console.log("Chats: ", chatsData);
     // Map through chat list and return FriendCard's for each one
-    let list = chatsData?.chats.map((chat) => {
+    let list = chatsData?.chats.map((chat, index) => {
       // Find name of other user (not client's name)
       const friendName = chat.users.find(
         (user) => user.screenName !== userData?.isLoggedIn?.screenName
       );
+
+      // Format the date
       const date = new Date(parseInt(chat.updatedAt));
       const formattedDate = date.toLocaleString();
+
+      // Build a FriendCard for this chat
       return (
         <FriendCard
-          key={chat.id}
-          cardKey={chat.id}
+          key={index}
+          cardKey={index}
           name={friendName?.name ? friendName.name : "null"}
           caption={`Last message on: ${formattedDate}`}
-          isActive={chat.id == activeCardNum}
+          isActive={index == activeCardNum}
           onClickHandler={onFriendCardClick}
         />
       );
