@@ -35,10 +35,16 @@ export class ChatResolver {
     const targetChatIds = chatList.map((chat) => chat.id);
 
     // Return chats matching target 'chatIds'
-    const chats = await Chat.find({
+    let chats = await Chat.find({
       relations: ["users"],
       where: { id: Any(targetChatIds) },
       order: { updatedAt: "DESC" },
+    });
+
+    // Workaround to remove targetUser from list
+    chats = chats.map((chat) => {
+      chat.users = chat.users.filter((user) => user.id !== targetUser.id);
+      return chat;
     });
 
     return chats;
