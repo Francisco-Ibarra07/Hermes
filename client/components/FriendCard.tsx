@@ -3,6 +3,7 @@ import React, { useState } from "react";
 
 interface FriendCardProps {
   name: string;
+  caption: string;
   cardKey: number;
   isActive?: boolean;
   onClickHandler: (key: number) => void;
@@ -26,22 +27,26 @@ function FriendCard(props: FriendCardProps) {
       onMouseLeave={() => setIsHovering(false)}
       onClick={() => props.onClickHandler(props.cardKey)}
     >
-      <Flex align="center">
-        <ChakraImage src="/images/avatar-icon.png" alt="avatar" boxSize={30} />
-        <Flex ml={2} maxW="80%" flexDir="column" justify="center">
-          <Text fontSize="sm" isTruncated>
-            {props.name}
-          </Text>
-          <Text fontSize="xs" isTruncated>
-            You: Last message text a very long message indeed
-          </Text>
+      <Flex w="100%" align="center" justify="space-between">
+        <Flex w="100%">
+          <ChakraImage src="/images/avatar-icon.png" alt="avatar" boxSize={30} />
+          <Flex ml={2} maxW="80%" flexDir="column" justify="center">
+            <Text fontSize="sm" isTruncated>
+              {props.name}
+            </Text>
+            <Text fontSize="xs" isTruncated>
+              {props.caption}
+            </Text>
+          </Flex>
+        </Flex>
+        <Flex>
+          {isHovering ? (
+            <Button colorScheme="blue" variant="outline" size="sm" borderRadius="xl">
+              ...
+            </Button>
+          ) : null}
         </Flex>
       </Flex>
-      {isHovering ? (
-        <Button colorScheme="blue" variant="outline" size="sm" borderRadius="xl">
-          ...
-        </Button>
-      ) : null}
     </Flex>
   );
 }
