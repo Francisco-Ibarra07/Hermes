@@ -28,6 +28,23 @@ const app = () => {
     setActiveCardNum(key);
   };
 
+  const fillFriendsWithMockData = (count: number) => {
+    let list = [];
+    for (let i = 0; i < count; i++) {
+      list.push(
+        <FriendCard
+          key={i}
+          cardKey={i}
+          name="John Smith"
+          isActive={i == activeCardNum}
+          onClickHandler={onFriendCardClick}
+        />
+      );
+    }
+
+    return list;
+  };
+
   const fillFriends = () => {
     // Map through chat list and return FriendCard's for each one
     let list = chatsData?.chats.map((chat) => {
@@ -114,7 +131,7 @@ const app = () => {
         {/* Friends List */}
         <Flex h="86%" flexDir="column" overflow="hidden" _hover={{ overflow: "auto" }}>
           {/* Friend Card */}
-          {fillFriends()}
+          {userData?.isLoggedIn ? fillFriends() : fillFriendsWithMockData(15)}
         </Flex>
       </Flex>
 
