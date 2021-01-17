@@ -3,10 +3,11 @@ import React, { useState } from "react";
 
 interface FriendCardProps {
   name: string;
+  chatId: number;
   caption: string;
   cardKey: number;
   isActive?: boolean;
-  onClickHandler: (key: number) => void;
+  onClickHandler: (key: number, chatId: number) => void;
 }
 
 function FriendCard(props: FriendCardProps) {
@@ -25,7 +26,7 @@ function FriendCard(props: FriendCardProps) {
       justify="space-between"
       onMouseOver={() => setIsHovering(true)}
       onMouseLeave={() => setIsHovering(false)}
-      onClick={() => props.onClickHandler(props.cardKey)}
+      onClick={() => props.onClickHandler(props.cardKey, props.chatId)}
     >
       <Flex w="100%" align="center" justify="space-between">
         <Flex w="100%">
