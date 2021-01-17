@@ -28,6 +28,7 @@ const client = createClient({
                 return data;
               }
 
+              // Store user object in 'isLoggedIn' query
               const cData = data as IsLoggedInQuery;
               cData.isLoggedIn = cResult.loginUser.user;
 
@@ -42,8 +43,18 @@ const client = createClient({
                 return data;
               }
 
+              // Store user object in 'isLoggedIn' query
               const cData = data as IsLoggedInQuery;
               cData.isLoggedIn = cResult.signupUser.user;
+
+              return cData as Data;
+            });
+          },
+          logoutUser: (_result, _args, cache) => {
+            cache.updateQuery({ query: IsLoggedInDocument }, (data) => {
+              // Reset 'isLoggedIn' back to null
+              const cData = data as IsLoggedInQuery;
+              cData.isLoggedIn = null;
 
               return cData as Data;
             });
