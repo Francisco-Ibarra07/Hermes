@@ -90,6 +90,39 @@ const app = () => {
     return list;
   };
 
+  const fillActiveRecieverSection = () => {
+    let recieverName;
+    let imageUrl;
+    if (!userData?.isLoggedIn) {
+      recieverName = "John Smith";
+      imageUrl = "/images/avatar-icon.png";
+    } else if (chatsData?.chats.length === 0) {
+      return "";
+    } else {
+      recieverName = chatsData?.chats[activeCardNum].users[0].name;
+      imageUrl = "/images/avatar-icon.png";
+    }
+
+    return (
+      <>
+        {/* Image + Name of person currently talking to */}
+        <Flex align="center" justify="center">
+          <Image src={imageUrl} alt="avatar" width={50} height={50} />
+          <Text ml={3} fontSize="2xl">
+            {recieverName}
+          </Text>
+        </Flex>
+
+        {/* Start call button */}
+        <Flex align="center" justify="center">
+          <Button variant="outline" colorScheme="blue">
+            Start Video Call
+          </Button>
+        </Flex>
+      </>
+    );
+  };
+
   if (fetching) {
     return <Spinner />;
   }
@@ -143,20 +176,7 @@ const app = () => {
       <Flex w="80%" h="100%" flexDir="column">
         {/* Name of reciever + Start Call */}
         <Flex h="10%" p={5} border="1px" align="center" justify="space-between">
-          {/* Image + Name of person currently talking to */}
-          <Flex align="center" justify="center">
-            <Image src="/images/avatar-icon.png" alt="avatar" width={50} height={50} />
-            <Text ml={3} fontSize="2xl">
-              John Smith
-            </Text>
-          </Flex>
-
-          {/* Start call button */}
-          <Flex align="center" justify="center">
-            <Button variant="outline" colorScheme="blue">
-              Start Video Call
-            </Button>
-          </Flex>
+          {fillActiveRecieverSection()}
         </Flex>
 
         {/* Main Messages */}
@@ -170,7 +190,7 @@ const app = () => {
             display="flex"
             flexDir="column-reverse"
           >
-            {fillMessages(10)}
+            {fillMessages(5)}
           </Stack>
         </Flex>
 
