@@ -1,0 +1,9 @@
+query messages($chatId: Float!) {
+  getMessages(chatId: $chatId) {
+    id
+    chatId
+    messageType
+    content
+    updatedAt
+  }
+}

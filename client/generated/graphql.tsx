@@ -181,6 +181,19 @@ export type IsLoggedInQuery = (
   )> }
 );
 
+export type MessagesQueryVariables = Exact<{
+  chatId: Scalars['Float'];
+}>;
+
+
+export type MessagesQuery = (
+  { __typename?: 'Query' }
+  & { getMessages: Array<(
+    { __typename?: 'Message' }
+    & Pick<Message, 'id' | 'chatId' | 'messageType' | 'content' | 'updatedAt'>
+  )> }
+);
+
 export const UserFieldsFragmentDoc = gql`
     fragment UserFields on User {
   id
@@ -259,4 +272,19 @@ export const IsLoggedInDocument = gql`
 
 export function useIsLoggedInQuery(options: Omit<Urql.UseQueryArgs<IsLoggedInQueryVariables>, 'query'> = {}) {
   return Urql.useQuery<IsLoggedInQuery>({ query: IsLoggedInDocument, ...options });
+};
+export const MessagesDocument = gql`
+    query messages($chatId: Float!) {
+  getMessages(chatId: $chatId) {
+    id
+    chatId
+    messageType
+    content
+    updatedAt
+  }
+}
+    `;
+
+export function useMessagesQuery(options: Omit<Urql.UseQueryArgs<MessagesQueryVariables>, 'query'> = {}) {
+  return Urql.useQuery<MessagesQuery>({ query: MessagesDocument, ...options });
 };
