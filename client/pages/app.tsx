@@ -11,31 +11,40 @@ import {
   InputLeftElement,
   Input,
   Stack,
+  Spinner,
 } from "@chakra-ui/react";
 import Image from "next/image";
 import { useState } from "react";
 import ChatMessage from "../components/ChatMessage";
 import FriendCard from "../components/FriendCard";
+import { useGetChatsQuery, useIsLoggedInQuery } from "../generated/graphql";
 
 const app = () => {
-  const [activeCardNum, setActiveCardNum] = useState(0);
+  const [activeCardNum, setActiveCardNum] = useState(1);
+  const [{ data: userData }] = useIsLoggedInQuery();
+  const [{ fetching, data: chatsData }] = useGetChatsQuery();
 
   const onFriendCardClick = (key: number) => {
     setActiveCardNum(key);
   };
 
-  const fillFriends = (count: number) => {
-    let list = [];
-    for (let i = 0; i < count; i++) {
-      list.push(
+  const fillFriends = () => {
+    // Map through chat list and return FriendCard's for each one
+    let list = chatsData?.chats.map((chat) => {
+      // Find name of other user (not client's name)
+      const friendName = chat.users.find(
+        (user) => user.screenName !== userData?.isLoggedIn?.screenName
+      );
+      return (
         <FriendCard
-          key={i}
-          cardKey={i}
-          isActive={i == activeCardNum}
+          key={chat.id}
+          cardKey={chat.id}
+          name={friendName?.name ? friendName.name : "null"}
+          isActive={chat.id == activeCardNum}
           onClickHandler={onFriendCardClick}
         />
       );
-    }
+    });
 
     return list;
   };
@@ -59,6 +68,10 @@ const app = () => {
 
     return list;
   };
+
+  if (fetching) {
+    return <Spinner />;
+  }
 
   return (
     <Flex h="100vh">
@@ -101,7 +114,7 @@ const app = () => {
         {/* Friends List */}
         <Flex h="86%" flexDir="column" overflow="hidden" _hover={{ overflow: "auto" }}>
           {/* Friend Card */}
-          {fillFriends(15)}
+          {fillFriends()}
         </Flex>
       </Flex>
 
