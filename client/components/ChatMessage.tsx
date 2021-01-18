@@ -2,7 +2,6 @@ import { Flex, Text } from "@chakra-ui/react";
 import { FunctionComponent } from "react";
 
 interface ChatMessageProps {
-  bg: string;
   isFirst: boolean;
   alignRight: boolean;
 }
@@ -17,7 +16,13 @@ const ChatMessage: FunctionComponent<ChatMessageProps> = (props) => {
       justify={props.alignRight ? "flex-end" : "flex-start"}
     >
       {/* Bubble */}
-      <Flex bg={props.bg} p={3} maxW="70%" borderRadius="2xl" align="center">
+      <Flex
+        bg={props.alignRight ? "blue.200" : "gray.200"}
+        p={3}
+        maxW="70%"
+        borderRadius="2xl"
+        align="center"
+      >
         <Text>{props.children}</Text>
       </Flex>
     </Flex>
