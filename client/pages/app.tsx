@@ -62,6 +62,13 @@ const app = () => {
       const date = new Date(parseInt(chat.updatedAt));
       const formattedDate = date.toLocaleString();
 
+      // Once chat list is loaded for the first time, set active
+      // chat id to fetch messages of the first friend card
+      if (activeChatIdRef.current === -1 && index === 0) {
+        activeChatIdRef.current = chat.id;
+        setActiveCardNum(0);
+      }
+
       // Build a FriendCard for this chat
       return (
         <FriendCard
@@ -83,12 +90,7 @@ const app = () => {
     let list = [];
     for (let i = 0; i < count; i++) {
       list.push(
-        <ChatMessage
-          key={`msg-${i}`}
-          bg={i % 2 == 0 ? "blue.200" : "gray.200"}
-          isFirst={i == 0}
-          alignRight={i % 2 == 0}
-        >
+        <ChatMessage key={`msg-${i}`} isFirst={i == 0} alignRight={i % 2 == 0}>
           Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor Lorem ipsum
           dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor Lorem ipsum dolor sit
           amet, consectetur adipiscing elit, sed do eiusmod tempor
