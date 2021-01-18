@@ -53,12 +53,13 @@ export class ChatResolver {
   @UseMiddleware(isAuth)
   @Query(() => [Message])
   async getMessages(@Arg("chatId", () => Number) chatId: number) {
-    const chat = await Chat.findOne(chatId, { relations: ["messages"] });
-    if (!chat) {
-      throw new Error("Chat does not exist. chatId: " + chatId);
-    }
+    const messages = await Message.find({
+      relations: ["chat"],
+      where: { chatId },
+      order: { updatedAt: "DESC" },
+    });
 
-    return chat.messages;
+    return messages;
   }
 
   // Create a chat given list of screen names
@@ -83,14 +84,22 @@ export class ChatResolver {
   async createMessage(
     @Arg("chatId", () => Number) chatId: number,
     @Arg("messageType", () => String) messageType: string,
-    @Arg("content", () => String) content: string
+    @Arg("content", () => String) content: string,
+    @Ctx() ctx: MyContext
   ): Promise<Message> {
+    const { req } = ctx;
     const chat = await Chat.findOne(chatId);
     if (!chat) {
       throw new Error("Chat does not exist. chatId: " + chatId);
     }
 
-    const newMessage = await Message.create({ chatId, chat, messageType, content }).save();
+    const newMessage = await Message.create({
+      senderId: req.session.userId,
+      chatId,
+      chat,
+      messageType,
+      content,
+    }).save();
 
     chat.updatedAt = new Date();
     await chat.save();
