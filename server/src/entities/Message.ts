@@ -27,6 +27,10 @@ export class Message extends BaseEntity {
 
   @Field()
   @Column()
+  senderId: number;
+
+  @Field()
+  @Column()
   chatId: number;
 
   @ManyToOne(() => Chat, (chat) => chat.messages)
