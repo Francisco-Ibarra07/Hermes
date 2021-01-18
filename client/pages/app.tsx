@@ -110,9 +110,8 @@ const app = () => {
       return (
         <ChatMessage
           key={`msg-${index}`}
-          bg={index % 2 == 0 ? "blue.200" : "gray.200"}
           isFirst={index == 0}
-          alignRight={index % 2 == 0}
+          alignRight={msg.senderId === userData?.isLoggedIn?.id}
         >
           {msg.content}
         </ChatMessage>
