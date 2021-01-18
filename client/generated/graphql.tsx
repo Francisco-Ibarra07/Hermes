@@ -50,6 +50,7 @@ export type Message = {
   id: Scalars['Float'];
   messageType: Scalars['String'];
   content: Scalars['String'];
+  senderId: Scalars['Float'];
   chatId: Scalars['Float'];
   createdAt: Scalars['String'];
   updatedAt: Scalars['String'];
@@ -190,7 +191,7 @@ export type MessagesQuery = (
   { __typename?: 'Query' }
   & { getMessages: Array<(
     { __typename?: 'Message' }
-    & Pick<Message, 'id' | 'chatId' | 'messageType' | 'content' | 'updatedAt'>
+    & Pick<Message, 'id' | 'chatId' | 'senderId' | 'messageType' | 'content' | 'updatedAt'>
   )> }
 );
 
@@ -278,6 +279,7 @@ export const MessagesDocument = gql`
   getMessages(chatId: $chatId) {
     id
     chatId
+    senderId
     messageType
     content
     updatedAt

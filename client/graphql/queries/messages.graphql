@@ -2,6 +2,7 @@ query messages($chatId: Float!) {
   getMessages(chatId: $chatId) {
     id
     chatId
+    senderId
     messageType
     content
     updatedAt
