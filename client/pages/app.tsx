@@ -17,10 +17,16 @@ import Image from "next/image";
 import { useRef, useState } from "react";
 import ChatMessage from "../components/ChatMessage";
 import FriendCard from "../components/FriendCard";
-import { useGetChatsQuery, useIsLoggedInQuery, useMessagesQuery } from "../generated/graphql";
+import {
+  useGetChatsQuery,
+  useIsLoggedInQuery,
+  useMessagesQuery,
+  useCreateMessageMutation,
+} from "../generated/graphql";
 
 const app = () => {
   const activeChatIdRef = useRef(-1);
+  const [textareaValue, setTextareaValue] = useState("");
   const [activeCardNum, setActiveCardNum] = useState(0);
   const [{ data: userData }] = useIsLoggedInQuery();
   const [{ fetching: fetchingChats, data: chatsData }] = useGetChatsQuery();
@@ -30,6 +36,7 @@ const app = () => {
     },
     pause: fetchingChats || activeChatIdRef.current == -1,
   });
+  const [{ fetching: fetchingCreateMessage }, createMessage] = useCreateMessageMutation();
 
   const onFriendCardClick = (key: number, chatId: number) => {
     setActiveCardNum(key);
@@ -106,8 +113,6 @@ const app = () => {
       return <Spinner />;
     }
 
-    console.log("messages grabbed: ", messagesData);
-
     let list = messagesData?.getMessages.map((msg, index) => {
       return (
         <ChatMessage
@@ -154,6 +159,18 @@ const app = () => {
         </Flex>
       </>
     );
+  };
+
+  const handleTextAreaSubmit = async () => {
+    if (textareaValue === "") return;
+    console.log("Creating message: \n\n", textareaValue);
+    const response = await createMessage({
+      chatId: activeChatIdRef.current,
+      content: textareaValue,
+      messageType: "text",
+    });
+    setTextareaValue("");
+    console.log("Response from creating message: ", response);
   };
 
   if (fetchingChats) {
@@ -229,8 +246,20 @@ const app = () => {
 
         {/* Typing area */}
         <Flex h="10%" p={5} border="1px" align="center">
-          <Textarea placeholder="Type message here" size="md" resize="none" />
-          <Button ml={5} colorScheme="blue">
+          <Textarea
+            size="md"
+            resize="none"
+            value={textareaValue}
+            placeholder="Type message here"
+            onChange={(e) => setTextareaValue(e.target.value)}
+          />
+          <Button
+            ml={5}
+            colorScheme="blue"
+            isDisabled={fetchingChats || fetchingMessages}
+            isLoading={fetchingCreateMessage}
+            onClick={handleTextAreaSubmit}
+          >
             Send
           </Button>
         </Flex>
