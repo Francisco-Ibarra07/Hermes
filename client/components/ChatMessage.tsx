@@ -23,7 +23,7 @@ const ChatMessage: FunctionComponent<ChatMessageProps> = (props) => {
         borderRadius="2xl"
         align="center"
       >
-        <Text>{props.children}</Text>
+        <Text maxW="100%">{props.children}</Text>
       </Flex>
     </Flex>
   );
