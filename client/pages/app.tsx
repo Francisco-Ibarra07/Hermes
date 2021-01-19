@@ -259,6 +259,7 @@ const app = () => {
             resize="none"
             value={textareaValue}
             placeholder="Type message here"
+            isDisabled={fetchingChats || fetchingMessages}
             onChange={(e) => setTextareaValue(e.target.value)}
           />
           <Button
