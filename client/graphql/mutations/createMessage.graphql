@@ -1,0 +1,5 @@
+mutation CreateMessage($chatId: Float!, $messageType: String!, $content: String!) {
+  createMessage(chatId: $chatId, messageType: $messageType, content: $content) {
+    ...MessageFields
+  }
+}
