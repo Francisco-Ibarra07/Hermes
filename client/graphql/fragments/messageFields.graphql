@@ -1,0 +1,8 @@
+fragment MessageFields on Message {
+  id
+  messageType
+  senderId
+  content
+  chatId
+  updatedAt
+}

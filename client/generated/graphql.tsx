@@ -102,9 +102,29 @@ export type FieldError = {
   message: Scalars['String'];
 };
 
+export type MessageFieldsFragment = (
+  { __typename?: 'Message' }
+  & Pick<Message, 'id' | 'messageType' | 'senderId' | 'content' | 'chatId' | 'updatedAt'>
+);
+
 export type UserFieldsFragment = (
   { __typename?: 'User' }
   & Pick<User, 'id' | 'name' | 'screenName' | 'email'>
+);
+
+export type CreateMessageMutationVariables = Exact<{
+  chatId: Scalars['Float'];
+  messageType: Scalars['String'];
+  content: Scalars['String'];
+}>;
+
+
+export type CreateMessageMutation = (
+  { __typename?: 'Mutation' }
+  & { createMessage: (
+    { __typename?: 'Message' }
+    & MessageFieldsFragment
+  ) }
 );
 
 export type LoginMutationVariables = Exact<{
@@ -195,6 +215,16 @@ export type MessagesQuery = (
   )> }
 );
 
+export const MessageFieldsFragmentDoc = gql`
+    fragment MessageFields on Message {
+  id
+  messageType
+  senderId
+  content
+  chatId
+  updatedAt
+}
+    `;
 export const UserFieldsFragmentDoc = gql`
     fragment UserFields on User {
   id
@@ -203,6 +233,17 @@ export const UserFieldsFragmentDoc = gql`
   email
 }
     `;
+export const CreateMessageDocument = gql`
+    mutation CreateMessage($chatId: Float!, $messageType: String!, $content: String!) {
+  createMessage(chatId: $chatId, messageType: $messageType, content: $content) {
+    ...MessageFields
+  }
+}
+    ${MessageFieldsFragmentDoc}`;
+
+export function useCreateMessageMutation() {
+  return Urql.useMutation<CreateMessageMutation, CreateMessageMutationVariables>(CreateMessageDocument);
+};
 export const LoginDocument = gql`
     mutation Login($email: String!, $password: String!) {
   loginUser(email: $email, password: $password) {
