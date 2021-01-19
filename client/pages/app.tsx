@@ -169,8 +169,16 @@ const app = () => {
       content: textareaValue,
       messageType: "text",
     });
-    setTextareaValue("");
-    console.log("Response from creating message: ", response);
+
+    if (response.error) {
+      console.log(response.error);
+    }
+    // Add new message to our list
+    else if (response.data?.createMessage) {
+      const messageAdded = response.data?.createMessage;
+      messagesData?.getMessages.unshift(messageAdded);
+      setTextareaValue("");
+    }
   };
 
   if (fetchingChats) {
