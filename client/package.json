@@ -20,6 +20,7 @@
     "next": "latest",
     "react": "^17.0.1",
     "react-dom": "^17.0.1",
+    "subscriptions-transport-ws": "^0.9.18",
     "urql": "^1.11.5"
   },
   "devDependencies": {
