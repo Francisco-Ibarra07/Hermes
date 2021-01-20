@@ -1,5 +1,5 @@
 import "reflect-metadata";
-import { COOKIE_NAME, __prod__ } from "./constants";
+import { COOKIE_NAME, PORT, __prod__ } from "./constants";
 import express from "express";
 import { ApolloServer } from "apollo-server-express";
 import cors from "cors";
@@ -14,17 +14,17 @@ import { User } from "./entities/User";
 import { Chat } from "./entities/Chat";
 import { Message } from "./entities/Message";
 import { ChatResolver } from "./resolvers/ChatResolver";
+import { createServer } from "http";
 
 // Main function so I can do 'top-level' async/await
 const main = async () => {
-  console.log("started");
-
+  // Typeorm
   await createConnection({
     type: "postgres",
     database: "hermes",
     username: "fibarra",
     password: "fibarra",
-    logging: !__prod__,
+    logging: false,
     synchronize: !__prod__,
     entities: [User, Chat, Message],
   });
@@ -34,6 +34,7 @@ const main = async () => {
   const RedisStore = connectRedis(session);
   const redisClient = redis.createClient();
 
+  // CORS
   app.use(
     cors({
       origin: "http://localhost:3000",
@@ -41,6 +42,7 @@ const main = async () => {
     })
   );
 
+  // express-sessions
   app.use(
     session({
       name: COOKIE_NAME,
@@ -60,11 +62,13 @@ const main = async () => {
     })
   );
 
+  // Type-graphql
   const schema = await buildSchema({
     resolvers: [UserResolver, ChatResolver],
     validate: false,
   });
 
+  // Apollo server
   const apolloServer = new ApolloServer({
     schema,
     // Special object accessible by all resolvers
@@ -75,8 +79,15 @@ const main = async () => {
   });
   apolloServer.applyMiddleware({ app, cors: false });
 
-  app.listen(5000, () => {
-    console.log("Server listening on http://localhost:5000");
+  // Subscriptions setup
+  const httpServer = createServer(app);
+  apolloServer.installSubscriptionHandlers(httpServer);
+
+  httpServer.listen(PORT, () => {
+    console.log(`🚀 Server ready at http://localhost:${PORT}${apolloServer.graphqlPath}`);
+    console.log(
+      `🚀 Subscriptions ready at ws://localhost:${PORT}${apolloServer.subscriptionsPath}`
+    );
   });
 };
 
