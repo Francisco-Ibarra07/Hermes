@@ -1,7 +1,7 @@
 import { ChakraProvider } from "@chakra-ui/react";
 import theme from "../theme";
 import { AppProps } from "next/app";
-import { Provider, createClient, dedupExchange, fetchExchange } from "urql";
+import { Provider, dedupExchange, fetchExchange, subscriptionExchange, Client } from "urql";
 import { cacheExchange, Data } from "@urql/exchange-graphcache";
 import {
   IsLoggedInDocument,
@@ -9,66 +9,82 @@ import {
   LoginMutation,
   SignupMutation,
 } from "../generated/graphql";
+import { SubscriptionClient } from "subscriptions-transport-ws";
 
-const client = createClient({
-  url: "http://localhost:5000/graphql",
-  fetchOptions: {
-    credentials: "include",
-  },
-  exchanges: [
-    dedupExchange,
-    cacheExchange({
-      updates: {
-        Mutation: {
-          loginUser: (result, _args, cache) => {
-            cache.updateQuery({ query: IsLoggedInDocument }, (data) => {
-              // Workaround: typecast to get strict typing on this function
-              const cResult = result as LoginMutation;
-              if (cResult.loginUser.errors) {
-                return data;
-              }
+let urqlClient: Client;
 
-              // Store user object in 'isLoggedIn' query
-              const cData = data as IsLoggedInQuery;
-              cData.isLoggedIn = cResult.loginUser.user;
+if (process.browser) {
+  const subscriptionClient = new SubscriptionClient("ws://localhost:5000/graphql", {
+    reconnect: true,
+  });
 
-              return cData as Data;
-            });
-          },
-          signupUser: (result, _args, cache) => {
-            cache.updateQuery({ query: IsLoggedInDocument }, (data) => {
-              // Workaround: typecast to get strict typing on this function
-              const cResult = result as SignupMutation;
-              if (cResult.signupUser.errors) {
-                return data;
-              }
+  urqlClient = new Client({
+    url: "http://localhost:5000/graphql",
+    fetchOptions: {
+      credentials: "include",
+    },
+    exchanges: [
+      dedupExchange,
+      cacheExchange({
+        updates: {
+          Mutation: {
+            loginUser: (result, _args, cache) => {
+              cache.updateQuery({ query: IsLoggedInDocument }, (data) => {
+                // Workaround: typecast to get strict typing on this function
+                const cResult = result as LoginMutation;
+                if (cResult.loginUser.errors) {
+                  return data;
+                }
 
-              // Store user object in 'isLoggedIn' query
-              const cData = data as IsLoggedInQuery;
-              cData.isLoggedIn = cResult.signupUser.user;
+                // Store user object in 'isLoggedIn' query
+                const cData = data as IsLoggedInQuery;
+                cData.isLoggedIn = cResult.loginUser.user;
 
-              return cData as Data;
-            });
-          },
-          logoutUser: (_result, _args, cache) => {
-            cache.updateQuery({ query: IsLoggedInDocument }, (data) => {
-              // Reset 'isLoggedIn' back to null
-              const cData = data as IsLoggedInQuery;
-              cData.isLoggedIn = null;
+                return cData as Data;
+              });
+            },
+            signupUser: (result, _args, cache) => {
+              cache.updateQuery({ query: IsLoggedInDocument }, (data) => {
+                // Workaround: typecast to get strict typing on this function
+                const cResult = result as SignupMutation;
+                if (cResult.signupUser.errors) {
+                  return data;
+                }
 
-              return cData as Data;
-            });
+                // Store user object in 'isLoggedIn' query
+                const cData = data as IsLoggedInQuery;
+                cData.isLoggedIn = cResult.signupUser.user;
+
+                return cData as Data;
+              });
+            },
+            logoutUser: (_result, _args, cache) => {
+              cache.updateQuery({ query: IsLoggedInDocument }, (data) => {
+                // Reset 'isLoggedIn' back to null
+                const cData = data as IsLoggedInQuery;
+                cData.isLoggedIn = null;
+
+                return cData as Data;
+              });
+            },
           },
         },
-      },
-    }),
-    fetchExchange,
-  ],
-});
+      }),
+      fetchExchange,
+      subscriptionExchange({
+        forwardSubscription(operation) {
+          return subscriptionClient.request(operation);
+        },
+      }),
+    ],
+  });
+}
 
 function MyApp({ Component, pageProps }: AppProps) {
   return (
-    <Provider value={client}>
+    <Provider
+      value={urqlClient ? urqlClient : new Client({ url: "http://localhost:5000/graphql " })}
+    >
       <title>Hermes Messenger</title>
       <ChakraProvider resetCSS theme={theme}>
         <Component {...pageProps} />
