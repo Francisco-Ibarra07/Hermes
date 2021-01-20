@@ -3,8 +3,43 @@ import { User } from "../entities/User";
 import { Message } from "../entities/Message";
 import { isAuth } from "../middleware/isAuth";
 import { MyContext } from "../types";
-import { Arg, Ctx, Mutation, Query, Resolver, UseMiddleware } from "type-graphql";
+import {
+  Arg,
+  Ctx,
+  Field,
+  Mutation,
+  ObjectType,
+  Publisher,
+  PubSub,
+  Query,
+  Resolver,
+  Root,
+  Subscription,
+  UseMiddleware,
+} from "type-graphql";
 import { Any, getConnection, In } from "typeorm";
+
+@ObjectType()
+class NewMessagePayload {
+  @Field()
+  newMessage: Message;
+}
+
+@ObjectType()
+class NewMessageArgs {
+  @Field()
+  userId: number;
+}
+
+@ObjectType()
+class FilterOptions {
+  @Field()
+  payload: NewMessagePayload;
+  @Field()
+  args: NewMessageArgs;
+}
+
+const PUBSUB_NEW_MESSAGE = "PUBSUB_NEW_MESSAGE";
 
 @Resolver()
 export class ChatResolver {
@@ -85,16 +120,19 @@ export class ChatResolver {
     @Arg("chatId", () => Number) chatId: number,
     @Arg("messageType", () => String) messageType: string,
     @Arg("content", () => String) content: string,
-    @Ctx() ctx: MyContext
+    @Ctx() ctx: MyContext,
+    @PubSub(PUBSUB_NEW_MESSAGE) publish: Publisher<NewMessagePayload>
   ): Promise<Message> {
     const { req } = ctx;
-    const chat = await Chat.findOne(chatId);
+    const senderId = req.session.userId;
+
+    const chat = await Chat.findOne(chatId, { relations: ["users"] });
     if (!chat) {
       throw new Error("Chat does not exist. chatId: " + chatId);
     }
 
     const newMessage = await Message.create({
-      senderId: req.session.userId,
+      senderId,
       chatId,
       chat,
       messageType,
@@ -104,43 +142,31 @@ export class ChatResolver {
     chat.updatedAt = new Date();
     await chat.save();
 
+    await publish({ newMessage });
+
     return newMessage;
   }
 
-  // Add a user to a chat given the userId
+  @Subscription(() => Message, {
+    topics: PUBSUB_NEW_MESSAGE,
+    filter: ({ payload, args }: FilterOptions) => {
+      const { chat, senderId } = payload.newMessage;
 
-  // Delete a person from a chat given their userId and chatId
-  // Delete a chat given the chatId
-  // Delete a message from the chat
-}
+      // Only send to the users that are apart of this chat
+      // and that are not the user that originally sent the msg
+      for (const user of chat.users) {
+        if (user.id !== senderId && user.id === args.userId) {
+          return true;
+        }
+      }
 
-/*
-
-
-query {
-  chats {
-    id
-    type
-    createdAt
-    updatedAt
-    users {
-      id
-      email
-    }
+      return false;
+    },
+  })
+  newMessage(
+    @Root() payload: NewMessagePayload,
+    @Arg("userId", () => Number) _userId: number
+  ): Message {
+    return payload.newMessage;
   }
 }
-
-mutation {
-  createChat(userIds: ["1", "2"], type: "individual") {
-    id
-    type
-    createdAt
-    updatedAt
-    users {
-      id 
-      email
-    }
-  }
-}
-
-*/
