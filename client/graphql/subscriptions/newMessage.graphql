@@ -1,0 +1,5 @@
+subscription NewMessage($userId: Float!) {
+  newMessage(userId: $userId) {
+    ...MessageFields
+  }
+}

@@ -102,6 +102,16 @@ export type FieldError = {
   message: Scalars['String'];
 };
 
+export type Subscription = {
+  __typename?: 'Subscription';
+  newMessage: Message;
+};
+
+
+export type SubscriptionNewMessageArgs = {
+  userId: Scalars['Float'];
+};
+
 export type MessageFieldsFragment = (
   { __typename?: 'Message' }
   & Pick<Message, 'id' | 'messageType' | 'senderId' | 'content' | 'chatId' | 'updatedAt'>
@@ -213,6 +223,19 @@ export type MessagesQuery = (
     { __typename?: 'Message' }
     & Pick<Message, 'id' | 'chatId' | 'senderId' | 'messageType' | 'content' | 'updatedAt'>
   )> }
+);
+
+export type NewMessageSubscriptionVariables = Exact<{
+  userId: Scalars['Float'];
+}>;
+
+
+export type NewMessageSubscription = (
+  { __typename?: 'Subscription' }
+  & { newMessage: (
+    { __typename?: 'Message' }
+    & MessageFieldsFragment
+  ) }
 );
 
 export const MessageFieldsFragmentDoc = gql`
@@ -330,4 +353,15 @@ export const MessagesDocument = gql`
 
 export function useMessagesQuery(options: Omit<Urql.UseQueryArgs<MessagesQueryVariables>, 'query'> = {}) {
   return Urql.useQuery<MessagesQuery>({ query: MessagesDocument, ...options });
+};
+export const NewMessageDocument = gql`
+    subscription NewMessage($userId: Float!) {
+  newMessage(userId: $userId) {
+    ...MessageFields
+  }
+}
+    ${MessageFieldsFragmentDoc}`;
+
+export function useNewMessageSubscription<TData = NewMessageSubscription>(options: Omit<Urql.UseSubscriptionArgs<NewMessageSubscriptionVariables>, 'query'> = {}, handler?: Urql.SubscriptionHandler<NewMessageSubscription, TData>) {
+  return Urql.useSubscription<NewMessageSubscription, TData, NewMessageSubscriptionVariables>({ query: NewMessageDocument, ...options }, handler);
 };
