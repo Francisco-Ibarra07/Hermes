@@ -38,7 +38,7 @@ const app = () => {
     pause: fetchingChats || activeChatIdRef.current === -1,
   });
   const [{ fetching: fetchingCreateMessage }, createMessage] = useCreateMessageMutation();
-  const [res] = useNewMessageSubscription(
+  const [_res] = useNewMessageSubscription(
     {
       variables: { userId: userData?.isLoggedIn ? userData.isLoggedIn.id : 0 },
       pause: fetchingUserData || fetchingMessages,
