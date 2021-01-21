@@ -22,21 +22,35 @@ import {
   useIsLoggedInQuery,
   useMessagesQuery,
   useCreateMessageMutation,
+  useNewMessageSubscription,
 } from "../generated/graphql";
 
 const app = () => {
   const activeChatIdRef = useRef(-1);
   const [textareaValue, setTextareaValue] = useState("");
   const [activeCardNum, setActiveCardNum] = useState(0);
-  const [{ data: userData }] = useIsLoggedInQuery();
+  const [{ fetching: fetchingUserData, data: userData }] = useIsLoggedInQuery();
   const [{ fetching: fetchingChats, data: chatsData }] = useGetChatsQuery();
   const [{ fetching: fetchingMessages, data: messagesData }] = useMessagesQuery({
     variables: {
       chatId: activeChatIdRef.current,
     },
-    pause: fetchingChats || activeChatIdRef.current == -1,
+    pause: fetchingChats || activeChatIdRef.current === -1,
   });
   const [{ fetching: fetchingCreateMessage }, createMessage] = useCreateMessageMutation();
+  const [res] = useNewMessageSubscription(
+    {
+      variables: { userId: userData?.isLoggedIn ? userData.isLoggedIn.id : 0 },
+      pause: fetchingUserData || fetchingMessages,
+    },
+    (prevData, response) => {
+      console.log("Prev data: ", prevData);
+      console.log("Response: ", response);
+      messagesData?.getMessages.unshift(response.newMessage);
+
+      return response;
+    }
+  );
 
   const onFriendCardClick = (key: number, chatId: number) => {
     setActiveCardNum(key);
