@@ -17,11 +17,13 @@
     "formik": "^2.2.6",
     "framer-motion": "^2.9.4",
     "graphql": "^15.4.0",
+    "isomorphic-ws": "^4.0.1",
     "next": "latest",
     "react": "^17.0.1",
     "react-dom": "^17.0.1",
     "subscriptions-transport-ws": "^0.9.18",
-    "urql": "^1.11.5"
+    "urql": "^1.11.5",
+    "ws": "^7.4.2"
   },
   "devDependencies": {
     "@graphql-codegen/cli": "1.20.0",
